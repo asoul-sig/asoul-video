@@ -29,9 +29,12 @@ var Members MembersStore
 type MembersStore interface {
 	// Create creates a new member profile record with the given options
 	// if the member's `name` `avatar_url` `signature` has been updated.
-	Create(ctx context.Context, opts MemberUpsertOptions) error
+	Create(ctx context.Context, opts UpsertMemberOptions) error
 	// GetBySecID returns the latest member profile with the given SecUID.
 	GetBySecID(ctx context.Context, secUID MemberSecUID) (*Member, error)
+	// GetBySecIDs returns the members' profile with the given SecUIDs.
+	// It will be ignored if the member does not exist.
+	GetBySecIDs(ctx context.Context, secUIDs ...MemberSecUID) ([]*Member, error)
 }
 
 func NewMembersStore(db sqlbuilder.Database) MembersStore {
@@ -52,7 +55,7 @@ type members struct {
 	sqlbuilder.Database
 }
 
-type MemberUpsertOptions struct {
+type UpsertMemberOptions struct {
 	SecUID    MemberSecUID
 	UID       string
 	UniqueID  string
@@ -62,7 +65,7 @@ type MemberUpsertOptions struct {
 	Signature string
 }
 
-func (db *members) Create(ctx context.Context, opts MemberUpsertOptions) error {
+func (db *members) Create(ctx context.Context, opts UpsertMemberOptions) error {
 	member, err := db.GetBySecID(ctx, opts.SecUID)
 	if err != nil {
 		opts.SecUID = member.SecUID
@@ -99,4 +102,13 @@ func (db *members) GetBySecID(ctx context.Context, secUID MemberSecUID) (*Member
 	}
 
 	return &member, nil
+}
+
+func (db *members) GetBySecIDs(ctx context.Context, secUIDs ...MemberSecUID) ([]*Member, error) {
+	var members []*Member
+
+	return members, db.WithContext(ctx).SelectFrom("members").
+		Where("sec_uid IN ?", secUIDs).
+		OrderBy("created_at DESC").
+		All(&members)
 }
