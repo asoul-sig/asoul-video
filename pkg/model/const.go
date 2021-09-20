@@ -14,9 +14,9 @@ const (
 	MemberSecUIDEileen = MemberSecUID("MS4wLjABAAAAxCiIYlaaKaMz_J1QaIAmHGgc3bTerIpgTzZjm0na8w5t2KTPrCz4bm_5M5EMPy92")
 )
 
-type ReportType int
+type ReportType string
 
 const (
-	ReportTypeUpdateMember ReportType = iota
-	ReportTypeCreateVideo
+	ReportTypeUpdateMember ReportType = "update_member"
+	ReportTypeCreateVideo  ReportType = "create_video"
 )
