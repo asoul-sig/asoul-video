@@ -15,7 +15,7 @@ type UpdateMember struct {
 	ShortUID  string       `json:"short_uid"`
 	Name      string       `json:"name"`
 	AvatarURL string       `json:"avatar_url"`
-	Signature string       `json:"signature"'`
+	Signature string       `json:"signature"`
 }
 
 type CreateVideo struct {
