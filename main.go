@@ -2,10 +2,13 @@ package main
 
 import (
 	"os"
-	"os/signal"
-	"syscall"
 
+	"github.com/flamego/flamego"
 	log "unknwon.dev/clog/v2"
+
+	"github.com/asoul-video/asoul-video/internal/context"
+	"github.com/asoul-video/asoul-video/internal/db"
+	"github.com/asoul-video/asoul-video/internal/route"
 )
 
 func main() {
@@ -15,7 +18,18 @@ func main() {
 		panic(err)
 	}
 
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
-	<-sig
+	if err := db.Init(); err != nil {
+		log.Fatal("Failed to connect to database: %v", err)
+	}
+
+	f := flamego.Classic()
+	f.Use(context.Contexter())
+
+	// Crawler report service.
+	source := route.NewSourceHandler()
+	f.Group("/source", func() {
+		f.Post("/report", source.Report)
+	}, source.VerifyKey(os.Getenv("SOURCE_REPORT_KEY")))
+
+	f.Run()
 }

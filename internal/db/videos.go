@@ -13,6 +13,7 @@ import (
 	"upper.io/db.v3/lib/sqlbuilder"
 
 	"github.com/asoul-video/asoul-video/internal/dbutil"
+	"github.com/asoul-video/asoul-video/pkg/model"
 )
 
 var _ VideosStore = (*videos)(nil)
@@ -33,20 +34,20 @@ func NewVideosStore(db sqlbuilder.Database) VideosStore {
 }
 
 type Video struct {
-	ID               string       `db:"id"`
-	AuthorSecUID     MemberSecUID `db:"author_sec_id"`
-	Author           *Member      `db:"-"`
-	Description      string       `db:"description"`
-	TextExtra        []string     `db:"text_extra"`
-	OriginCoverURLs  []string     `db:"origin_cover_urls"`
-	DynamicCoverURLs []string     `db:"dynamic_cover_urls"`
-	VideoHeight      int          `db:"video_height"`
-	VideoWidth       int          `db:"video_width"`
-	VideoDuration    int64        `db:"video_duration"`
-	VideoRatio       string       `db:"video_ratio"`
-	VideoURLs        []string     `db:"video_urls"`
-	VideoCDNURL      string       `db:"video_cdn_url"`
-	CreatedAt        time.Time    `db:"created_at"`
+	ID               string             `db:"id"`
+	AuthorSecUID     model.MemberSecUID `db:"author_sec_id"`
+	Author           *Member            `db:"-"`
+	Description      string             `db:"description"`
+	TextExtra        []string           `db:"text_extra"`
+	OriginCoverURLs  []string           `db:"origin_cover_urls"`
+	DynamicCoverURLs []string           `db:"dynamic_cover_urls"`
+	VideoHeight      int                `db:"video_height"`
+	VideoWidth       int                `db:"video_width"`
+	VideoDuration    int64              `db:"video_duration"`
+	VideoRatio       string             `db:"video_ratio"`
+	VideoURLs        []string           `db:"video_urls"`
+	VideoCDNURL      string             `db:"video_cdn_url"`
+	CreatedAt        time.Time          `db:"created_at"`
 }
 
 type videos struct {
@@ -54,7 +55,7 @@ type videos struct {
 }
 
 type CreateVideoOptions struct {
-	AuthorSecUID     MemberSecUID
+	AuthorSecUID     model.MemberSecUID
 	Description      string
 	TextExtra        []string
 	OriginCoverURLs  []string
@@ -118,12 +119,12 @@ func (db *videos) List(ctx context.Context) ([]*Video, error) {
 		return nil, errors.Wrap(err, "get videos")
 	}
 
-	memberSecIDSets := make(map[MemberSecUID]struct{})
+	memberSecIDSets := make(map[model.MemberSecUID]struct{})
 	for _, video := range videos {
 		memberSecIDSets[video.AuthorSecUID] = struct{}{}
 	}
 
-	memberSecIDs := make([]MemberSecUID, 0, len(memberSecIDSets))
+	memberSecIDs := make([]model.MemberSecUID, 0, len(memberSecIDSets))
 	for memberSecID := range memberSecIDSets {
 		memberSecIDs = append(memberSecIDs, memberSecID)
 	}
@@ -135,7 +136,7 @@ func (db *videos) List(ctx context.Context) ([]*Video, error) {
 	}
 
 	// FIXME: maybe we can just query it from database with the videos?
-	memberSets := make(map[MemberSecUID]*Member, len(members))
+	memberSets := make(map[model.MemberSecUID]*Member, len(members))
 	for _, member := range members {
 		member := member
 		memberSets[member.SecUID] = member
