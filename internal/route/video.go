@@ -1,0 +1,43 @@
+// Copyright 2021 E99p1ant. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
+package route
+
+import (
+	log "unknwon.dev/clog/v2"
+
+	"github.com/asoul-video/asoul-video/internal/context"
+	"github.com/asoul-video/asoul-video/internal/db"
+)
+
+type Video struct{}
+
+// NewVideoHandler creates a new Video router.
+func NewVideoHandler() *Video {
+	return &Video{}
+}
+
+func (*Video) List(ctx context.Context) {
+	secUIDs := ctx.QueryStrings("secUID")
+	orderBy := ctx.Query("orderBy")
+	order := ctx.Query("order")
+
+	page := ctx.QueryInt("page")
+	pageSize := ctx.QueryInt("pageSize")
+
+	videos, err := db.Videos.List(ctx.Request().Context(), db.ListVideoOptions{
+		SecUIDs:  secUIDs,
+		OrderBy:  orderBy,
+		Order:    order,
+		Page:     page,
+		PageSize: pageSize,
+	})
+	if err != nil {
+		log.Error("Failed to list video: %v", err)
+		ctx.ServerError()
+		return
+	}
+
+	ctx.Success(videos)
+}

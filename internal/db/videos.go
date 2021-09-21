@@ -26,7 +26,7 @@ type VideosStore interface {
 	// GetByID returns video with the given id, it returns `ErrVideoNotFound` error if video does not exist.
 	GetByID(ctx context.Context, id string) (*Video, error)
 	// List returns the video list.
-	List(ctx context.Context) ([]*Video, error)
+	List(ctx context.Context, opts ListVideoOptions) ([]*Video, error)
 }
 
 func NewVideosStore(db sqlbuilder.Database) VideosStore {
@@ -34,20 +34,20 @@ func NewVideosStore(db sqlbuilder.Database) VideosStore {
 }
 
 type Video struct {
-	ID               string             `db:"id"`
-	AuthorSecUID     model.MemberSecUID `db:"author_sec_id"`
-	Author           *Member            `db:"-"`
-	Description      string             `db:"description"`
-	TextExtra        []string           `db:"text_extra"`
-	OriginCoverURLs  []string           `db:"origin_cover_urls"`
-	DynamicCoverURLs []string           `db:"dynamic_cover_urls"`
-	VideoHeight      int                `db:"video_height"`
-	VideoWidth       int                `db:"video_width"`
-	VideoDuration    int64              `db:"video_duration"`
-	VideoRatio       string             `db:"video_ratio"`
-	VideoURLs        []string           `db:"video_urls"`
-	VideoCDNURL      string             `db:"video_cdn_url"`
-	CreatedAt        time.Time          `db:"created_at"`
+	ID               string             `db:"id" json:"id"`
+	AuthorSecUID     model.MemberSecUID `db:"author_sec_id" json:"author_sec_uid"`
+	Author           *Member            `db:"-" json:"author"`
+	Description      string             `db:"description" json:"description"`
+	TextExtra        []string           `db:"text_extra" json:"text_extra"`
+	OriginCoverURLs  []string           `db:"origin_cover_urls" json:"origin_cover_urls"`
+	DynamicCoverURLs []string           `db:"dynamic_cover_urls" json:"dynamic_cover_urls"`
+	VideoHeight      int                `db:"video_height" json:"video_height"`
+	VideoWidth       int                `db:"video_width" json:"video_width"`
+	VideoDuration    int64              `db:"video_duration" json:"video_duration"`
+	VideoRatio       string             `db:"video_ratio" json:"video_ratio"`
+	VideoURLs        []string           `db:"video_urls" json:"video_urls"`
+	VideoCDNURL      string             `db:"video_cdn_url" json:"-"`
+	CreatedAt        time.Time          `db:"created_at" json:"created_at"`
 }
 
 type videos struct {
@@ -115,10 +115,47 @@ func (db *videos) GetByID(ctx context.Context, id string) (*Video, error) {
 	return &video, nil
 }
 
-func (db *videos) List(ctx context.Context) ([]*Video, error) {
-	// TODO: pagination
+type ListVideoOptions struct {
+	SecUIDs []string
+	OrderBy string
+	Order   string
+
+	Page     int
+	PageSize int
+}
+
+func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, error) {
+	if opts.OrderBy != "video_duration" && opts.OrderBy != "created_at" {
+		opts.OrderBy = ""
+	}
+
+	if opts.Order != "asc" {
+		opts.Order = "desc"
+	}
+
+	if opts.Page <= 0 {
+		opts.Page = 1
+	}
+
+	if opts.PageSize <= 0 || opts.PageSize >= 30 {
+		opts.PageSize = 30
+	}
+
+	query := db.WithContext(ctx).SelectFrom("videos")
+
+	if len(opts.SecUIDs) != 0 {
+		query = query.Where("author_sec_id IN ?", opts.SecUIDs)
+	}
+
+	if opts.OrderBy != "" {
+		query = query.OrderBy(opts.OrderBy + " " + opts.Order)
+	}
+
+	// Pagination
+	query = query.Limit(opts.PageSize).Offset((opts.Page - 1) * opts.PageSize)
+
 	var videos []*Video
-	if err := db.WithContext(ctx).SelectFrom("videos").All(&videos); err != nil {
+	if err := query.All(&videos); err != nil {
 		return nil, errors.Wrap(err, "get videos")
 	}
 

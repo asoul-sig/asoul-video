@@ -34,6 +34,9 @@ func main() {
 		member := route.NewMemberHandler()
 		f.Get("/members", member.List)
 		f.Get("/member/{secUID}", member.GetBySecUID)
+
+		video := route.NewVideoHandler()
+		f.Get("/videos", video.List)
 	})
 
 	// Crawler report service.
