@@ -207,7 +207,7 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 
 func (db *videos) Random(ctx context.Context) (*Video, error) {
 	var video Video
-	if err := db.Select("*, RANDOM() AS random").From("videos").OrderBy("random").Limit(1).One(&video); err != nil {
+	if err := db.Select("*", "RANDOM() AS random").From("videos").OrderBy("random").Limit(1).One(&video); err != nil {
 		return nil, errors.Wrap(err, "get video")
 	}
 
