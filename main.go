@@ -33,7 +33,7 @@ func main() {
 	f.Group("/api", func() {
 		member := route.NewMemberHandler()
 		f.Get("/members", member.List)
-		f.Get("/member/:secUID", member.GetBySecUID)
+		f.Get("/member/{secUID}", member.GetBySecUID)
 	})
 
 	// Crawler report service.
