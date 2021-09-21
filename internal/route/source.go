@@ -45,25 +45,24 @@ func (*Source) Report(ctx context.Context) {
 
 	switch req.Type {
 	case model.ReportTypeUpdateMember:
-		var updateMembers []model.UpdateMember
-		if err := jsoniter.Unmarshal(req.Data, &updateMembers); err != nil {
+		var updateMember model.UpdateMember
+		if err := jsoniter.Unmarshal(req.Data, &updateMember); err != nil {
 			ctx.Error(http.StatusBadRequest, err)
 			return
 		}
 
-		for _, updateMember := range updateMembers {
-			if err := db.Members.Create(ctx.Request().Context(), db.CreateMemberOptions{
-				SecUID:    updateMember.SecUID,
-				UID:       updateMember.UID,
-				UniqueID:  updateMember.UniqueID,
-				ShortUID:  updateMember.ShortUID,
-				Name:      updateMember.Name,
-				AvatarURL: updateMember.AvatarURL,
-				Signature: updateMember.Signature,
-			}); err != nil {
-				log.Error("Failed to create new member: %v", err)
-				continue
-			}
+		if err := db.Members.Create(ctx.Request().Context(), db.CreateMemberOptions{
+			SecUID:    updateMember.SecUID,
+			UID:       updateMember.UID,
+			UniqueID:  updateMember.UniqueID,
+			ShortUID:  updateMember.ShortUID,
+			Name:      updateMember.Name,
+			AvatarURL: updateMember.AvatarURL,
+			Signature: updateMember.Signature,
+		}); err != nil {
+			log.Error("Failed to create new member: %v", err)
+			ctx.ServerError()
+			return
 		}
 
 	case model.ReportTypeCreateVideo:
