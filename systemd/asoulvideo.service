@@ -1,0 +1,35 @@
+# asoulvideo.service
+# /etc/systemd/system/asoulvideo.service
+# Start by `service asoulvideo start`
+# Enable by `systemctl enable asoulvideo`
+
+[Unit]
+Description=AsoulVideo
+Documentation=https://github.com/asoul-video/asoul-video
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/etc/asoul-video
+ExecStart=/etc/asoul-video/asoul-video
+TimeoutStopSec=5s
+LimitNOFILE=1048576
+LimitNPROC=5120
+PrivateTmp=true
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+Environment="FLAMEGO_ENV=production"
+Environment="FLAMEGO_ADDR=0.0.0.0:80"
+
+Environment="PGHOST=<REDACTED>"
+Environment="PGUSER=asoulvideo"
+Environment="PGPASSWORD=<REDACTED>"
+Environment="PGDATABASE=asoulvideo"
+Environment="PGSSLMODE=disable"
+
+Environment="SOURCE_REPORT_KEY=<REDACTED>"
+
+[Install]
+WantedBy=multi-user.target
