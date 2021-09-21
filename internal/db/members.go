@@ -59,22 +59,22 @@ type CreateMemberOptions struct {
 
 func (db *members) Create(ctx context.Context, opts CreateMemberOptions) error {
 	member, err := db.GetBySecID(ctx, opts.SecUID)
-	if err != nil {
+	if err == nil {
 		opts.SecUID = member.SecUID
 		opts.UID = member.UID
 		opts.UniqueID = member.UniqueID
 		opts.ShortUID = member.ShortUID
+
+		if opts.Name == member.Name && opts.AvatarURL == member.AvatarURL && opts.Signature == member.Signature {
+			return nil
+		}
 	}
 
-	if opts.Name != member.Name || opts.AvatarURL != member.AvatarURL || opts.Signature != member.Signature {
-		_, err = db.WithContext(ctx).InsertInto("members").
-			Columns("uid", "unique_id", "sec_uid", "short_id", "name", "avatar_url", "signature").
-			Values(opts.UID, opts.UniqueID, opts.SecUID, opts.ShortUID, opts.Name, opts.AvatarURL, opts.Signature).
-			Exec()
-		return err
-	}
-
-	return nil
+	_, err = db.WithContext(ctx).InsertInto("members").
+		Columns("uid", "unique_id", "sec_uid", "short_id", "name", "avatar_url", "signature").
+		Values(opts.UID, opts.UniqueID, opts.SecUID, opts.ShortUID, opts.Name, opts.AvatarURL, opts.Signature).
+		Exec()
+	return err
 }
 
 var ErrMemberNotFound = errors.New("member dose not exist")
