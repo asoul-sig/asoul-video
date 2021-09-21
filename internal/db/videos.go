@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -78,9 +80,22 @@ func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions
 		opts.CreatedAt = time.Now()
 	}
 
+	videoURLs := make([]string, 0, len(opts.VideoURLs))
+	for _, u := range videoURLs {
+		videoURL, err := url.Parse(u)
+		if err != nil {
+			continue
+		}
+		if strings.HasSuffix(videoURL.Host, "douyinvod.com") { // Remove temporary video URL.
+			continue
+		}
+
+		videoURLs = append(videoURLs, u)
+	}
+
 	_, err := db.WithContext(ctx).InsertInto("videos").
 		Columns("id", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "video_urls", "video_cdn_url", "created_at").
-		Values(id, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.VideoURLs, opts.VideoCDNURL, opts.CreatedAt).
+		Values(id, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, videoURLs, opts.VideoCDNURL, opts.CreatedAt).
 		Exec()
 	if err != nil {
 		if dbutil.IsUniqueViolation(err, "videos_pkey") {
