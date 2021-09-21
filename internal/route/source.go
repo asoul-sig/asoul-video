@@ -85,7 +85,7 @@ func (*Source) Report(ctx context.Context) {
 			VideoURLs:        createVideo.VideoURLs,
 			VideoCDNURL:      createVideo.VideoCDNURL,
 			CreatedAt:        createVideo.CreatedAt,
-		}); err != nil {
+		}); err != nil && err != db.ErrVideoExists {
 			log.Error("Failed to create new video: %v", err)
 			ctx.ServerError()
 			return

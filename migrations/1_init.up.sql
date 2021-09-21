@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS members (
 CREATE INDEX idx_member_sec_uid ON members( sec_uid );
 
 CREATE TABLE IF NOT EXISTS videos (
-    id                 TEXT                     NOT NULL PRIMARY KEY,
+    id                 TEXT                     NOT NULL,
     author_sec_id      TEXT                     NOT NULL,
     description        TEXT                     NOT NULL,
     text_extra         TEXT[]                   NOT NULL,

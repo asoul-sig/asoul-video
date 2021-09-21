@@ -76,15 +76,18 @@ func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions
 		opts.CreatedAt = time.Now()
 	}
 
-	_, err := db.WithContext(ctx).InsertInto("members").
+	_, err := db.WithContext(ctx).InsertInto("videos").
 		Columns("id", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "video_urls", "video_cdn_url", "created_at").
 		Values(id, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.VideoURLs, opts.VideoCDNURL, opts.CreatedAt).
 		Exec()
-
-	if dbutil.IsUniqueViolation(err, "videos_pkey") {
-		return ErrVideoExists
+	if err != nil {
+		if dbutil.IsUniqueViolation(err, "videos_pkey") {
+			return ErrVideoExists
+		}
+		return err
 	}
-	return err
+
+	return nil
 }
 
 var ErrVideoNotFound = errors.New("video dose not exist")

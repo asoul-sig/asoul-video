@@ -5,18 +5,14 @@
 package dbutil
 
 import (
-	"github.com/jackc/pgconn"
-	"github.com/pkg/errors"
+	"github.com/Shyp/go-dberror"
 )
 
-func isConstraintViolation(err error, code, constraint string) bool {
-	pgErr, ok := errors.Cause(err).(*pgconn.PgError)
-	if !ok {
+func IsUniqueViolation(err error, constraint string) bool {
+	switch e := dberror.GetError(err).(type) {
+	case *dberror.Error:
+		return e.Constraint == constraint
+	default:
 		return false
 	}
-	return pgErr.Code == code && pgErr.ConstraintName == constraint
-}
-
-func IsUniqueViolation(err error, constraint string) bool {
-	return isConstraintViolation(err, "23505", constraint)
 }
