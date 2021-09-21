@@ -11,6 +11,11 @@ import (
 	"github.com/asoul-video/asoul-video/internal/route"
 )
 
+var (
+	BuildTime   string
+	BuildCommit string
+)
+
 func main() {
 	defer log.Stop()
 	err := log.NewConsole()
@@ -25,11 +30,22 @@ func main() {
 	f := flamego.Classic()
 	f.Use(context.Contexter())
 
+	f.Group("/api", func() {
+
+	})
+
 	// Crawler report service.
 	source := route.NewSourceHandler()
 	f.Group("/source", func() {
 		f.Post("/report", source.Report)
 	}, source.VerifyKey(os.Getenv("SOURCE_REPORT_KEY")))
+
+	f.Get("/ping", func(ctx context.Context) {
+		ctx.Success(map[string]interface{}{
+			"build_time":   BuildTime,
+			"build_commit": BuildCommit,
+		})
+	})
 
 	f.Run()
 }
