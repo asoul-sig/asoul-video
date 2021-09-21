@@ -1,0 +1,178 @@
+<html>
+<head>
+  <title>ASOUL-Video</title>
+
+  <style>
+      html {
+          line-height: 1.15;
+          -webkit-text-size-adjust: 100%
+      }
+
+      body, html {
+          height: 100%;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box
+      }
+
+      body {
+          margin: 0;
+          color: #7c8891;
+          font: 16px/22px -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+          background: #ebedee;
+          padding: 50px;
+          overflow: hidden
+      }
+
+      a {
+          background-color: transparent;
+          color: #FA8072;
+          text-decoration: none;
+      }
+
+      img {
+          border-style: none;
+          width: 100%;
+          margin-bottom: 20px;
+      }
+
+      [hidden] {
+          display: none
+      }
+
+      @media (max-width: 768px) {
+          body {
+              padding: 30px
+          }
+      }
+
+      @media (max-width: 420px) {
+          body {
+              padding: 10px
+          }
+      }
+
+      h1 {
+          margin-top: 10px;
+          margin-bottom: 10px;
+          line-height: 30px;
+          font-size: 24px
+      }
+
+      .wrapper {
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: -ms-flexbox;
+          display: flex;
+          -webkit-box-pack: center;
+          -webkit-justify-content: center;
+          -ms-flex-pack: center;
+          justify-content: center;
+          -webkit-box-align: center;
+          -webkit-align-items: center;
+          -ms-flex-align: center;
+          align-items: center;
+          -webkit-box-orient: vertical;
+          -webkit-box-direction: normal;
+          -webkit-flex-direction: column;
+          -ms-flex-direction: column;
+          flex-direction: column;
+          height: 100%
+      }
+
+      .container {
+          position: relative;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+          width: 80%;
+          background: #fff;
+          -webkit-border-radius: 10px;
+          border-radius: 10px;
+          overflow: hidden;
+          max-width: 700px;
+          -webkit-box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, .06)
+      }
+
+      @media (max-width: 768px) {
+          .container {
+              width: 100%;
+              min-width: 290px
+          }
+      }
+
+      .container > div {
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+          padding: 55px 34px
+      }
+
+      @media (max-width: 420px) {
+          .container > div {
+              padding: 40px 24.7px !important
+          }
+      }
+
+      .footer {
+          color: #bfc4c7;
+          padding: 20px 0;
+      }
+
+      .text-center {
+          text-align: center
+      }
+
+      li {
+          line-height: 30px;
+      }
+
+  </style>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RKC11STF6Q"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag() {
+          dataLayer.push(arguments);
+      }
+
+      gtag('js', new Date());
+
+      gtag('config', 'G-RKC11STF6Q');
+  </script>
+</head>
+<div class="wrapper">
+  <div class="container">
+    <div>
+      <img src="https://img.cdn.n3ko.co/lsky/2021/09/21/0439025df07b8.jpg" alt=""/>
+      <p>ASOUL-Video 前端仍在建设中......</p>
+      <p>但我们目前可以提供 Web API。</p>
+
+      <ul>
+        <li>
+          <b>成员列表</b>
+          <a href="/api/videos">
+            <pre>/api/videos</pre>
+          </a>
+        </li>
+        <li>
+          <b>视频列表</b>
+          <a href="/api/videos">
+            <pre>/api/videos</pre>
+          </a>
+          <a href="/api/videos?page=1">
+            <pre>/api/videos?page=1</pre>
+          </a>
+          <a href="/api/video/6980246688816532744">
+            <pre>/api/video/6980246688816532744</pre>
+          </a>
+          <a href="/api/video/random">
+            <pre>/api/video/random</pre>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer text-center"><a href="https://github.com/asoul-video">A-SOUL Video</a></div>
+</div>
+</html>

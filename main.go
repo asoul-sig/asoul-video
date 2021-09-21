@@ -4,8 +4,10 @@ import (
 	"os"
 
 	"github.com/flamego/flamego"
+	"github.com/flamego/template"
 	log "unknwon.dev/clog/v2"
 
+	"github.com/asoul-video/asoul-video/assets/templates"
 	"github.com/asoul-video/asoul-video/internal/context"
 	"github.com/asoul-video/asoul-video/internal/db"
 	"github.com/asoul-video/asoul-video/internal/route"
@@ -29,6 +31,16 @@ func main() {
 
 	f := flamego.Classic()
 	f.Use(context.Contexter())
+
+	fs, err := template.EmbedFS(templates.FS, ".", []string{".html"})
+	if err != nil {
+		log.Fatal("Failed to embed template file system: %v", err)
+	}
+	f.Use(template.Templater(template.Options{FileSystem: fs}))
+
+	landing := route.NewLandingHandler()
+	f.Get("/", landing.Home)
+	f.NotFound(landing.Home)
 
 	f.Group("/api", func() {
 		member := route.NewMemberHandler()
