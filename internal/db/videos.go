@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"math/rand"
 	"net/url"
 	"strings"
 	"time"
@@ -206,8 +207,13 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 }
 
 func (db *videos) Random(ctx context.Context) (*Video, error) {
+	var count int
+	if err := db.Select("COUNT(*)").From("videos").One(&count); err != nil {
+		return nil, errors.Wrap(err, "count")
+	}
+
 	var video Video
-	if err := db.Select("*", "RANDOM() AS random").From("videos").OrderBy("random").Limit(1).One(&video); err != nil {
+	if err := db.SelectFrom("videos").Offset(rand.Intn(count)).Limit(1).One(&video); err != nil {
 		return nil, errors.Wrap(err, "get video")
 	}
 
