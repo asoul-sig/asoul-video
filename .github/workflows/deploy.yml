@@ -24,7 +24,7 @@ jobs:
         env:
           PKG_PATH: github.com/asoul-video/asoul-video
         run: |
-          CGO_ENABLED=0 go build -v -ldflags ' -X "${{ env.PKG_PATH }}.BuildTime=${{ steps.date.outputs.date }}" -X "${{ env.PKG_PATH }}.BuildCommit=${{ env.GITHUB_SHA }}"' -trimpath
+          CGO_ENABLED=0 go build -v -ldflags ' -X "${{ env.PKG_PATH }}.BuildTime=${{ steps.date.outputs.date }}" -X "${{ env.PKG_PATH }}.BuildCommit=$GITHUB_SHA"' -trimpath
 
       - name: Upload binary to server
         uses: appleboy/scp-action@master
