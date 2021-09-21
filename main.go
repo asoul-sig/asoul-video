@@ -37,6 +37,10 @@ func main() {
 
 		video := route.NewVideoHandler()
 		f.Get("/videos", video.List)
+		f.Group("/video", func() {
+			f.Get("/{id}", video.GetByID)
+			f.Get("/random", video.Random)
+		})
 	})
 
 	// Crawler report service.

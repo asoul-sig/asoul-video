@@ -41,3 +41,26 @@ func (*Video) List(ctx context.Context) {
 
 	ctx.Success(videos)
 }
+
+func (*Video) GetByID(ctx context.Context) {
+	id := ctx.Param("id")
+	video, err := db.Videos.GetByID(ctx.Request().Context(), id)
+	if err != nil {
+		log.Error("Failed to get video by ID: %v", err)
+		ctx.ServerError()
+		return
+	}
+
+	ctx.Success(video)
+}
+
+func (*Video) Random(ctx context.Context) {
+	video, err := db.Videos.Random(ctx.Request().Context())
+	if err != nil {
+		log.Error("Failed to get video randomly: %v", err)
+		ctx.ServerError()
+		return
+	}
+
+	ctx.Success(video)
+}

@@ -27,6 +27,8 @@ type VideosStore interface {
 	GetByID(ctx context.Context, id string) (*Video, error)
 	// List returns the video list.
 	List(ctx context.Context, opts ListVideoOptions) ([]*Video, error)
+	// Random returns a video randomly.
+	Random(ctx context.Context) (*Video, error)
 }
 
 func NewVideosStore(db sqlbuilder.Database) VideosStore {
@@ -186,4 +188,22 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 	}
 
 	return videos, nil
+}
+
+func (db *videos) Random(ctx context.Context) (*Video, error) {
+	var video Video
+
+	err := db.WithContext(ctx).SelectFrom("videos").OrderBy("RANDOM()").Limit(1).One(&video)
+	if err != nil {
+		return nil, errors.Wrap(err, "get video randomly")
+	}
+
+	memberStore := NewMembersStore(db)
+	member, err := memberStore.GetBySecID(ctx, video.AuthorSecUID)
+	if err != nil {
+		return nil, errors.Wrap(err, "get member by re")
+	}
+	video.Author = member
+
+	return &video, nil
 }
