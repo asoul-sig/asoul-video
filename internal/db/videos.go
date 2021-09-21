@@ -208,9 +208,12 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 func (db *videos) Random(ctx context.Context) (*Video, error) {
 	var video Video
 
-	err := db.WithContext(ctx).SelectFrom("videos").OrderBy("RANDOM()").Limit(1).One(&video)
+	row, err := db.QueryRowContext(ctx, `SELECT * FROM videos ORDER BY RANDOM() LIMIT 1;`)
 	if err != nil {
 		return nil, errors.Wrap(err, "get video randomly")
+	}
+	if err := row.Scan(&video); err != nil {
+		return nil, errors.Wrap(err, "scan row")
 	}
 
 	memberStore := NewMembersStore(db)
