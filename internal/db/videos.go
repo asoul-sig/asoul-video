@@ -208,7 +208,11 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 
 func (db *videos) Random(ctx context.Context) (*Video, error) {
 	var count int
-	if err := db.Select("COUNT(*)").From("videos").One(&count); err != nil {
+	row, err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM videos;")
+	if err != nil {
+		return nil, errors.Wrap(err, "count")
+	}
+	if err := row.Scan(&count); err != nil {
 		return nil, errors.Wrap(err, "count")
 	}
 
