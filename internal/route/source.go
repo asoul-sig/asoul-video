@@ -51,7 +51,7 @@ func (*Source) Report(ctx context.Context) {
 			return
 		}
 
-		if err := db.Members.Create(ctx.Request().Context(), db.CreateMemberOptions{
+		if err := db.Members.Upsert(ctx.Request().Context(), db.UpsertMemberOptions{
 			SecUID:    updateMember.SecUID,
 			UID:       updateMember.UID,
 			UniqueID:  updateMember.UniqueID,

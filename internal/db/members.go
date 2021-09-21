@@ -19,9 +19,9 @@ var _ MembersStore = (*members)(nil)
 var Members MembersStore
 
 type MembersStore interface {
-	// Create creates a new member profile record with the given options
-	// if the member's `name` `avatar_url` `signature` has been updated.
-	Create(ctx context.Context, opts CreateMemberOptions) error
+	// Upsert creates a new member profile record with the given options,
+	// it updates the `name` `avatar_url` `signature` field if the member is exists.
+	Upsert(ctx context.Context, opts UpsertMemberOptions) error
 	// GetBySecID returns the latest member profile with the given SecUID.
 	GetBySecID(ctx context.Context, secUID model.MemberSecUID) (*Member, error)
 	// GetBySecIDs returns the members' profile with the given SecUIDs.
@@ -49,7 +49,7 @@ type members struct {
 	sqlbuilder.Database
 }
 
-type CreateMemberOptions struct {
+type UpsertMemberOptions struct {
 	SecUID    model.MemberSecUID
 	UID       string
 	UniqueID  string
@@ -59,17 +59,20 @@ type CreateMemberOptions struct {
 	Signature string
 }
 
-func (db *members) Create(ctx context.Context, opts CreateMemberOptions) error {
-	member, err := db.GetBySecID(ctx, opts.SecUID)
+func (db *members) Upsert(ctx context.Context, opts UpsertMemberOptions) error {
+	_, err := db.GetBySecID(ctx, opts.SecUID)
 	if err == nil {
-		opts.SecUID = member.SecUID
-		opts.UID = member.UID
-		opts.UniqueID = member.UniqueID
-		opts.ShortUID = member.ShortUID
-
-		if opts.Name == member.Name && opts.AvatarURL == member.AvatarURL && opts.Signature == member.Signature {
-			return nil
+		if _, err := db.WithContext(ctx).Update("members").Set(
+			"name", opts.Name,
+			"avatar_url", opts.AvatarURL,
+			"signature", opts.Signature).
+			Where("sec_uid = ?", opts.SecUID).Exec(); err != nil {
+			return errors.Wrap(err, "update member")
 		}
+		return nil
+
+	} else if err != ErrMemberNotFound {
+		return errors.Wrap(err, "get member by sec_id")
 	}
 
 	_, err = db.WithContext(ctx).InsertInto("members").
