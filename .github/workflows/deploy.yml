@@ -1,0 +1,48 @@
+name: Deploy
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.x
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date -u '+%Y-%m-%d %I:%M:%S %Z')"
+
+      - name: Build binary
+        env:
+          PKG_PATH: github.com/asoul-video/asoul-video
+        run: |
+          CGO_ENABLED=0 go build -v -ldflags ' -X "${{ env.PKG_PATH }}.BuildTime=${{ steps.date.outputs.date }}" -X "${{ env.PKG_PATH }}.BuildCommit=${{ env.GITHUB_SHA }}"' -trimpath
+
+      - name: Upload binary to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          password: ${{ secrets.PRODUCTION_PASSWORD }}
+          port: ${{ secrets.PRODUCTION_PORT }}
+          source: "asoul-video"
+          target: "/etc/asoul-video"
+
+      - name: Restart service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          password: ${{ secrets.PRODUCTION_PASSWORD }}
+          port: ${{ secrets.PRODUCTION_PORT }}
+          script: |
+            sudo chmod +x /etc/asoul-video/asoul-video
+            sudo service asoulvideo restart
