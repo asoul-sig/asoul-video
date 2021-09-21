@@ -27,6 +27,8 @@ type MembersStore interface {
 	// GetBySecIDs returns the members' profile with the given SecUIDs.
 	// It will be ignored if the member does not exist.
 	GetBySecIDs(ctx context.Context, secUIDs ...model.MemberSecUID) ([]*Member, error)
+	// List returns all the members.
+	List(ctx context.Context) ([]*Member, error)
 }
 
 func NewMembersStore(db sqlbuilder.Database) MembersStore {
@@ -34,13 +36,13 @@ func NewMembersStore(db sqlbuilder.Database) MembersStore {
 }
 
 type Member struct {
-	SecUID    model.MemberSecUID `db:"sec_uid"`
-	UID       string             `db:"uid"`
-	UniqueID  string             `db:"unique_id"`
-	ShortUID  string             `db:"short_id"`
-	Name      string             `db:"name"`
-	AvatarURL string             `db:"avatar_url"`
-	Signature string             `db:"signature"`
+	SecUID    model.MemberSecUID `db:"sec_uid" json:"sec_uid"`
+	UID       string             `db:"uid" json:"uid"`
+	UniqueID  string             `db:"unique_id" json:"unique_id"`
+	ShortUID  string             `db:"short_id" json:"short_uid"`
+	Name      string             `db:"name" json:"name"`
+	AvatarURL string             `db:"avatar_url" json:"avatar_url"`
+	Signature string             `db:"signature" json:"signature"`
 }
 
 type members struct {
@@ -103,4 +105,9 @@ func (db *members) GetBySecIDs(ctx context.Context, secUIDs ...model.MemberSecUI
 		Where("sec_uid IN ?", secUIDs).
 		OrderBy("created_at DESC").
 		All(&members)
+}
+
+func (db *members) List(ctx context.Context) ([]*Member, error) {
+	var members []*Member
+	return members, db.WithContext(ctx).SelectFrom("members").OrderBy("uid").All(&members)
 }

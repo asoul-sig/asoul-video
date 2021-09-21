@@ -31,7 +31,9 @@ func main() {
 	f.Use(context.Contexter())
 
 	f.Group("/api", func() {
-
+		member := route.NewMemberHandler()
+		f.Get("/members", member.List)
+		f.Get("/member/:secUID", member.GetBySecUID)
 	})
 
 	// Crawler report service.
