@@ -134,6 +134,7 @@ func (db *videos) GetByID(ctx context.Context, id string) (*Video, error) {
 }
 
 type ListVideoOptions struct {
+	Keyword string
 	SecUIDs []string
 	OrderBy string
 	Order   string
@@ -163,6 +164,10 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 
 	if len(opts.SecUIDs) != 0 {
 		query = query.Where("author_sec_id IN ?", opts.SecUIDs)
+	}
+
+	if opts.Keyword != "" {
+		query = query.And("description ILIKE ?", opts.Keyword)
 	}
 
 	if opts.OrderBy != "" {

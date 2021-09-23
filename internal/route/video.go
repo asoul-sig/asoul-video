@@ -20,6 +20,7 @@ func NewVideoHandler() *Video {
 
 func (*Video) List(ctx context.Context) {
 	secUIDs := ctx.QueryStrings("secUID")
+	keyword := ctx.Query("keyword")
 	orderBy := ctx.Query("orderBy")
 	order := ctx.Query("order")
 
@@ -28,6 +29,7 @@ func (*Video) List(ctx context.Context) {
 
 	videos, err := db.Videos.List(ctx.Request().Context(), db.ListVideoOptions{
 		SecUIDs:  secUIDs,
+		Keyword:  keyword,
 		OrderBy:  orderBy,
 		Order:    order,
 		Page:     page,
