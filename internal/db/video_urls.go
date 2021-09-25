@@ -78,23 +78,33 @@ func (db *videoURLs) Create(ctx context.Context, videoID, u string) error {
 }
 
 func (db *videoURLs) GetByVideoID(ctx context.Context, videoID string) ([]string, error) {
-	rows, err := db.WithContext(ctx).QueryRow("SELECT url FROM video_urls WHERE video_id = ? AND status = ?", videoID, VideoStatusAvailable)
-	if err != nil {
-		return nil, errors.Wrap(err, "select url")
+	var videoURLs []*VideoURL
+	if err := db.WithContext(ctx).SelectFrom("video_urls").
+		Where("video_id = ? AND status = ?", videoID, VideoStatusAvailable).
+		All(&videoURLs); err != nil {
+		return nil, errors.Wrap(err, "get video urls")
 	}
 
-	var urls []string
-	if err := rows.Scan(&urls); err != nil {
-		return nil, errors.Wrap(err, "scan")
+	urls := make([]string, 0, len(videoURLs))
+	for _, v := range videoURLs {
+		urls = append(urls, v.URL)
 	}
 	return urls, nil
 }
 
 func (db *videoURLs) GetAvailableVideoURLs(ctx context.Context) ([]string, error) {
-	var urls []string
-	return urls, db.WithContext(ctx).Select("url").From("video_urls").
+	var videoURLs []*VideoURL
+	if err := db.WithContext(ctx).SelectFrom("video_urls").
 		Where("status = ?", VideoStatusAvailable).
-		All(&urls)
+		All(&videoURLs); err != nil {
+		return nil, errors.Wrap(err, "get video urls")
+	}
+
+	urls := make([]string, 0, len(videoURLs))
+	for _, v := range videoURLs {
+		urls = append(urls, v.URL)
+	}
+	return urls, nil
 }
 
 func (db *videoURLs) SetStatus(ctx context.Context, videoURL string, status VideoStatus) error {
