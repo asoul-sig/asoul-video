@@ -21,7 +21,10 @@ func NewVideoHandler() *Video {
 func (*Video) List(ctx context.Context) {
 	secUIDs := ctx.QueryStrings("secUID")
 	keyword := ctx.Query("keyword")
-	orderBy := ctx.Query("orderBy")
+	orderBy := "created_at"
+	if ctx.Query("orderBy") != "" {
+		orderBy = ctx.Query("orderBy")
+	}
 	order := ctx.Query("order")
 
 	page := ctx.QueryInt("page")
