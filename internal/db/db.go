@@ -37,6 +37,7 @@ func Init() error {
 
 	Members = NewMembersStore(db)
 	Videos = NewVideosStore(db)
+	VideoURLs = NewVideoURLsStore(db)
 
 	return nil
 }

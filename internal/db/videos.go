@@ -7,8 +7,6 @@ package db
 import (
 	"context"
 	"math/rand"
-	"net/url"
-	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -50,8 +48,7 @@ type Video struct {
 	VideoWidth       int                `db:"video_width" json:"video_width"`
 	VideoDuration    int64              `db:"video_duration" json:"video_duration"`
 	VideoRatio       string             `db:"video_ratio" json:"video_ratio"`
-	VideoURLs        []string           `db:"video_urls" json:"video_urls"`
-	VideoCDNURL      string             `db:"video_cdn_url" json:"-"`
+	VideoURLs        []string           `db:"-" json:"video_urls"`
 	CreatedAt        time.Time          `db:"created_at" json:"created_at"`
 }
 
@@ -69,8 +66,6 @@ type CreateVideoOptions struct {
 	VideoWidth       int
 	VideoDuration    int64
 	VideoRatio       string
-	VideoURLs        []string
-	VideoCDNURL      string
 	CreatedAt        time.Time
 }
 
@@ -81,22 +76,9 @@ func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions
 		opts.CreatedAt = time.Now()
 	}
 
-	videoURLs := make([]string, 0, len(opts.VideoURLs))
-	for _, u := range videoURLs {
-		videoURL, err := url.Parse(u)
-		if err != nil {
-			continue
-		}
-		if strings.HasSuffix(videoURL.Host, "douyinvod.com") { // Remove temporary video URL.
-			continue
-		}
-
-		videoURLs = append(videoURLs, u)
-	}
-
 	_, err := db.WithContext(ctx).InsertInto("videos").
-		Columns("id", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "video_urls", "video_cdn_url", "created_at").
-		Values(id, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, videoURLs, opts.VideoCDNURL, opts.CreatedAt).
+		Columns("id", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "created_at").
+		Values(id, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.CreatedAt).
 		Exec()
 	if err != nil {
 		if dbutil.IsUniqueViolation(err, "videos_pkey") {
@@ -129,6 +111,13 @@ func (db *videos) GetByID(ctx context.Context, id string) (*Video, error) {
 		return nil, errors.Wrap(err, "get member by sec id")
 	}
 	video.Author = member
+
+	videoURLStore := NewVideoURLsStore(db)
+	videoURLs, err := videoURLStore.GetByVideoID(ctx, video.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "get video urls by video id")
+	}
+	video.VideoURLs = videoURLs
 
 	return &video, nil
 }
@@ -204,7 +193,14 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 		member := member
 		memberSets[member.SecUID] = member
 	}
+
+	videoURLStore := NewVideoURLsStore(db)
 	for _, video := range videos {
+		videoURLs, err := videoURLStore.GetByVideoID(ctx, video.ID)
+		if err != nil {
+			continue
+		}
+		video.VideoURLs = videoURLs
 		video.Author = memberSets[video.AuthorSecUID]
 	}
 
@@ -232,6 +228,13 @@ func (db *videos) Random(ctx context.Context) (*Video, error) {
 		return nil, errors.Wrap(err, "get member by re")
 	}
 	video.Author = member
+
+	videoURLStore := NewVideoURLsStore(db)
+	videoURLs, err := videoURLStore.GetByVideoID(ctx, video.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "get video urls by video id")
+	}
+	video.VideoURLs = videoURLs
 
 	return &video, nil
 }
