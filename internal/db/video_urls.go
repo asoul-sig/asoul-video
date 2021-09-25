@@ -32,6 +32,8 @@ type VideoURLsStore interface {
 	Create(ctx context.Context, videoID, url string) error
 	// GetByVideoID returns the available video urls with the given video ID.
 	GetByVideoID(ctx context.Context, videoID string) ([]string, error)
+	// GetAvailableVideoURLs returns all the available video urls.
+	GetAvailableVideoURLs(ctx context.Context) ([]string, error)
 	// SetStatus set the video url status.
 	SetStatus(ctx context.Context, videoURL string, status VideoStatus) error
 }
@@ -77,6 +79,13 @@ func (db *videoURLs) GetByVideoID(ctx context.Context, videoID string) ([]string
 	var urls []string
 	return urls, db.WithContext(ctx).Select("url").From("video_urls").
 		Where("video_id = ? AND status = ?", videoID, VideoStatusAvailable).
+		All(&urls)
+}
+
+func (db *videoURLs) GetAvailableVideoURLs(ctx context.Context) ([]string, error) {
+	var urls []string
+	return urls, db.WithContext(ctx).Select("url").From("video_urls").
+		Where("status = ?", VideoStatusAvailable).
 		All(&urls)
 }
 

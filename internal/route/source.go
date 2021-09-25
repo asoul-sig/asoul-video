@@ -104,3 +104,13 @@ func (*Source) Report(ctx context.Context) {
 
 	ctx.ResponseWriter().WriteHeader(http.StatusNoContent)
 }
+
+func (*Source) VideoURLs(ctx context.Context) {
+	urls, err := db.VideoURLs.GetAvailableVideoURLs(ctx.Request().Context())
+	if err != nil {
+		ctx.ServerError()
+		log.Error("Failed to get available video urls: %v", err)
+		return
+	}
+	ctx.Success(urls)
+}

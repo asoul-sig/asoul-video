@@ -59,6 +59,7 @@ func main() {
 	source := route.NewSourceHandler()
 	f.Group("/source", func() {
 		f.Post("/report", source.Report)
+		f.Get("/video_urls", source.VideoURLs)
 	}, source.VerifyKey(os.Getenv("SOURCE_REPORT_KEY")))
 
 	f.Get("/ping", func(ctx context.Context) {
