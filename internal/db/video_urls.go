@@ -78,10 +78,16 @@ func (db *videoURLs) Create(ctx context.Context, videoID, u string) error {
 }
 
 func (db *videoURLs) GetByVideoID(ctx context.Context, videoID string) ([]string, error) {
+	rows, err := db.WithContext(ctx).QueryRow("SELECT url FROM video_urls WHERE video_id = ? AND status = ?", videoID, VideoStatusAvailable)
+	if err != nil {
+		return nil, errors.Wrap(err, "select url")
+	}
+
 	var urls []string
-	return urls, db.WithContext(ctx).Select("url").From("video_urls").
-		Where("video_id = ? AND status = ?", videoID, VideoStatusAvailable).
-		All(&urls)
+	if err := rows.Scan(&urls); err != nil {
+		return nil, errors.Wrap(err, "scan")
+	}
+	return urls, nil
 }
 
 func (db *videoURLs) GetAvailableVideoURLs(ctx context.Context) ([]string, error) {

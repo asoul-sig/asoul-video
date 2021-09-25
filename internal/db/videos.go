@@ -197,10 +197,9 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 	videoURLStore := NewVideoURLsStore(db)
 	for _, video := range videos {
 		videoURLs, err := videoURLStore.GetByVideoID(ctx, video.ID)
-		if err != nil {
-			continue
+		if err == nil {
+			video.VideoURLs = videoURLs
 		}
-		video.VideoURLs = videoURLs
 		video.Author = memberSets[video.AuthorSecUID]
 	}
 
