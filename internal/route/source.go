@@ -83,12 +83,17 @@ func (*Source) Report(ctx context.Context) {
 				VideoWidth:       createVideo.VideoWidth,
 				VideoDuration:    createVideo.VideoDuration,
 				VideoRatio:       createVideo.VideoRatio,
-				VideoURLs:        createVideo.VideoURLs,
-				VideoCDNURL:      createVideo.VideoCDNURL,
 				CreatedAt:        createVideo.CreatedAt,
 			}); err != nil && err != db.ErrVideoExists {
 				log.Error("Failed to create new video: %v", err)
 				continue
+			}
+
+			for _, videoURL := range createVideo.VideoURLs {
+				if err := db.VideoURLs.Create(ctx.Request().Context(), videoURL, createVideo.ID); err != nil {
+					log.Error("Failed to create video %q url: %v", createVideo.ID, err)
+					continue
+				}
 			}
 		}
 
