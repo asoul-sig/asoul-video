@@ -14,9 +14,9 @@ jobs:
           go-version: 1.16.x
 
       - name: Install NodeJS
-          uses: actions/setup-node@v2
-          with:
-            node-version: '12'
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
 
       - name: Install Yarn
         run: npm install -g yarn
