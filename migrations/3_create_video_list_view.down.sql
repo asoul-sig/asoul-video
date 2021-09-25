@@ -1,0 +1,5 @@
+BEGIN;
+
+DROP VIEW IF EXISTS video_list;
+
+COMMIT;

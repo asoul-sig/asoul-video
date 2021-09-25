@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	dbv3 "upper.io/db.v3"
 	"upper.io/db.v3/lib/sqlbuilder"
 
 	"github.com/asoul-video/asoul-video/internal/dbutil"
@@ -39,7 +38,7 @@ func NewVideosStore(db sqlbuilder.Database) VideosStore {
 type Video struct {
 	ID               string             `db:"id" json:"id"`
 	AuthorSecUID     model.MemberSecUID `db:"author_sec_id" json:"author_sec_uid"`
-	Author           *Member            `db:"-" json:"author"`
+	Author           *Member            `db:",inline" json:"author"`
 	Description      string             `db:"description" json:"description"`
 	TextExtra        []string           `db:"text_extra" json:"text_extra"`
 	OriginCoverURLs  []string           `db:"origin_cover_urls" json:"origin_cover_urls"`
@@ -48,7 +47,7 @@ type Video struct {
 	VideoWidth       int                `db:"video_width" json:"video_width"`
 	VideoDuration    int64              `db:"video_duration" json:"video_duration"`
 	VideoRatio       string             `db:"video_ratio" json:"video_ratio"`
-	VideoURLs        []string           `db:"-" json:"video_urls"`
+	VideoURLs        []string           `db:"video_urls" json:"video_urls"`
 	CreatedAt        time.Time          `db:"created_at" json:"created_at"`
 }
 
@@ -94,32 +93,7 @@ var ErrVideoNotFound = errors.New("video dose not exist")
 
 func (db *videos) GetByID(ctx context.Context, id string) (*Video, error) {
 	var video Video
-
-	err := db.WithContext(ctx).SelectFrom("videos").
-		Where("id = ?", id).
-		One(&video)
-	if err != nil {
-		if err == dbv3.ErrNoMoreRows {
-			return nil, ErrVideoNotFound
-		}
-		return nil, err
-	}
-
-	memberStore := NewMembersStore(db)
-	member, err := memberStore.GetBySecID(ctx, video.AuthorSecUID)
-	if err != nil {
-		return nil, errors.Wrap(err, "get member by sec id")
-	}
-	video.Author = member
-
-	videoURLStore := NewVideoURLsStore(db)
-	videoURLs, err := videoURLStore.GetByVideoID(ctx, video.ID)
-	if err != nil {
-		return nil, errors.Wrap(err, "get video urls by video id")
-	}
-	video.VideoURLs = videoURLs
-
-	return &video, nil
+	return &video, db.WithContext(ctx).SelectFrom("video_list").Where("id = ?", id).One(&video)
 }
 
 type ListVideoOptions struct {
@@ -149,7 +123,7 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 		opts.PageSize = 30
 	}
 
-	query := db.WithContext(ctx).SelectFrom("videos")
+	query := db.WithContext(ctx).SelectFrom("video_list")
 
 	if len(opts.SecUIDs) != 0 {
 		query = query.Where("author_sec_id IN ?", opts.SecUIDs)
@@ -170,45 +144,12 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 	if err := query.All(&videos); err != nil {
 		return nil, errors.Wrap(err, "get videos")
 	}
-
-	memberSecIDSets := make(map[model.MemberSecUID]struct{})
-	for _, video := range videos {
-		memberSecIDSets[video.AuthorSecUID] = struct{}{}
-	}
-
-	memberSecIDs := make([]model.MemberSecUID, 0, len(memberSecIDSets))
-	for memberSecID := range memberSecIDSets {
-		memberSecIDs = append(memberSecIDs, memberSecID)
-	}
-
-	memberStore := NewMembersStore(db)
-	members, err := memberStore.GetBySecIDs(ctx, memberSecIDs...)
-	if err != nil {
-		return nil, errors.Wrap(err, "get videos' members")
-	}
-
-	// FIXME: maybe we can just query it from database with the videos?
-	memberSets := make(map[model.MemberSecUID]*Member, len(members))
-	for _, member := range members {
-		member := member
-		memberSets[member.SecUID] = member
-	}
-
-	videoURLStore := NewVideoURLsStore(db)
-	for _, video := range videos {
-		videoURLs, err := videoURLStore.GetByVideoID(ctx, video.ID)
-		if err == nil {
-			video.VideoURLs = videoURLs
-		}
-		video.Author = memberSets[video.AuthorSecUID]
-	}
-
 	return videos, nil
 }
 
 func (db *videos) Random(ctx context.Context) (*Video, error) {
 	var count int
-	row, err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM videos;")
+	row, err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM video_list;")
 	if err != nil {
 		return nil, errors.Wrap(err, "count")
 	}
@@ -217,23 +158,8 @@ func (db *videos) Random(ctx context.Context) (*Video, error) {
 	}
 
 	var video Video
-	if err := db.SelectFrom("videos").Offset(rand.Intn(count)).Limit(1).One(&video); err != nil {
+	if err := db.SelectFrom("video_list").Offset(rand.Intn(count)).Limit(1).One(&video); err != nil {
 		return nil, errors.Wrap(err, "get video")
 	}
-
-	memberStore := NewMembersStore(db)
-	member, err := memberStore.GetBySecID(ctx, video.AuthorSecUID)
-	if err != nil {
-		return nil, errors.Wrap(err, "get member by re")
-	}
-	video.Author = member
-
-	videoURLStore := NewVideoURLsStore(db)
-	videoURLs, err := videoURLStore.GetByVideoID(ctx, video.ID)
-	if err != nil {
-		return nil, errors.Wrap(err, "get video urls by video id")
-	}
-	video.VideoURLs = videoURLs
-
 	return &video, nil
 }
