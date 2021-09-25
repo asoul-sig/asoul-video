@@ -53,6 +53,8 @@ type videoURLs struct {
 	sqlbuilder.Database
 }
 
+var ErrVideoURLExists = errors.New("duplicate video url")
+
 func (db *videoURLs) Create(ctx context.Context, videoID, u string) error {
 	videoURL, err := url.Parse(u)
 	if err != nil {
@@ -68,7 +70,7 @@ func (db *videoURLs) Create(ctx context.Context, videoID, u string) error {
 		Exec()
 	if err != nil {
 		if dbutil.IsUniqueViolation(err, "video_urls_pkey") {
-			return ErrVideoExists
+			return ErrVideoURLExists
 		}
 		return err
 	}
