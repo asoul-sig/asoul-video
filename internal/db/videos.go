@@ -130,7 +130,7 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 	}
 
 	if opts.Keyword != "" {
-		query = query.And("description ILIKE ?", opts.Keyword)
+		query = query.And("description ILIKE ?", "%"+opts.Keyword+"%")
 	}
 
 	if opts.OrderBy != "" {
