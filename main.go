@@ -1,14 +1,14 @@
 package main
 
 import (
+	"io/fs"
 	"net/http"
 	"os"
 
 	"github.com/flamego/flamego"
-	"github.com/flamego/template"
 	log "unknwon.dev/clog/v2"
 
-	"github.com/asoul-video/asoul-video/assets/templates"
+	"github.com/asoul-video/asoul-video/frontend"
 	"github.com/asoul-video/asoul-video/internal/context"
 	"github.com/asoul-video/asoul-video/internal/db"
 	"github.com/asoul-video/asoul-video/internal/route"
@@ -38,15 +38,13 @@ func main() {
 	})
 	f.Use(context.Contexter())
 
-	fs, err := template.EmbedFS(templates.FS, ".", []string{".html"})
+	fe, err := fs.Sub(frontend.FS, "dist")
 	if err != nil {
-		log.Fatal("Failed to embed template file system: %v", err)
+		log.Fatal("Failed to sub filesystem: %v", err)
 	}
-	f.Use(template.Templater(template.Options{FileSystem: fs}))
-
-	landing := route.NewLandingHandler()
-	f.Get("/", landing.Home)
-	f.NotFound(landing.Home)
+	f.Use(flamego.Static(flamego.StaticOptions{
+		FileSystem: http.FS(fe),
+	}))
 
 	f.Group("/api", func() {
 		member := route.NewMemberHandler()

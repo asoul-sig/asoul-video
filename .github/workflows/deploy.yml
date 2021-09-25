@@ -13,8 +13,19 @@ jobs:
         with:
           go-version: 1.16.x
 
+      - name: Install NodeJS
+          uses: actions/setup-node@v2
+          with:
+            node-version: '12'
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Build frontend
+        run: cd frontend && yarn install && yarn build
 
       - name: Get current date
         id: date
