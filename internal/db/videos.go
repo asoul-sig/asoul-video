@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	dbv3 "upper.io/db.v3"
 	"upper.io/db.v3/lib/sqlbuilder"
 
 	"github.com/asoul-video/asoul-video/internal/dbutil"
@@ -93,7 +94,13 @@ var ErrVideoNotFound = errors.New("video dose not exist")
 
 func (db *videos) GetByID(ctx context.Context, id string) (*Video, error) {
 	var video Video
-	return &video, db.WithContext(ctx).SelectFrom("video_list").Where("id = ?", id).One(&video)
+	if err := db.WithContext(ctx).SelectFrom("video_list").Where("id = ?", id).One(&video); err != nil {
+		if err == dbv3.ErrNoMoreRows {
+			return nil, ErrVideoNotFound
+		}
+		return nil, err
+	}
+	return &video, nil
 }
 
 type ListVideoOptions struct {

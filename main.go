@@ -1,9 +1,9 @@
 package main
 
 import (
+	"net/http"
 	"os"
 
-	"github.com/flamego/cors"
 	"github.com/flamego/flamego"
 	"github.com/flamego/template"
 	log "unknwon.dev/clog/v2"
@@ -31,6 +31,11 @@ func main() {
 	}
 
 	f := flamego.Classic()
+	f.Use(func(ctx flamego.Context) {
+		ctx.ResponseWriter().Header().Set("Access-Control-Allow-Methods", http.MethodGet)
+		ctx.ResponseWriter().Header().Set("Access-Control-Max-Age", "600")
+		ctx.ResponseWriter().Header().Set("Access-Control-Allow-Origin", "*")
+	})
 	f.Use(context.Contexter())
 
 	fs, err := template.EmbedFS(templates.FS, ".", []string{".html"})
@@ -53,8 +58,9 @@ func main() {
 		f.Group("/video", func() {
 			f.Get("/{id}", video.GetByID)
 			f.Get("/random", video.Random)
+			f.Get("/play/{id}", video.Play)
 		})
-	}, cors.CORS())
+	})
 
 	// Crawler report service.
 	source := route.NewSourceHandler()
