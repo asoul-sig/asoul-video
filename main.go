@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/flamego/cors"
 	"github.com/flamego/flamego"
 	"github.com/flamego/template"
 	log "unknwon.dev/clog/v2"
@@ -53,7 +54,7 @@ func main() {
 			f.Get("/{id}", video.GetByID)
 			f.Get("/random", video.Random)
 		})
-	})
+	}, cors.CORS())
 
 	// Crawler report service.
 	source := route.NewSourceHandler()
