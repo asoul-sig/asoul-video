@@ -98,6 +98,25 @@ func (*Source) Report(ctx context.Context) {
 			}
 		}
 
+	case model.ReportTypeUpdateVideoMeta:
+		var updateVideoMeta []model.UpdateVideoMeta
+		if err := jsoniter.Unmarshal(req.Data, &updateVideoMeta); err != nil {
+			ctx.Error(http.StatusBadRequest, err)
+			return
+		}
+
+		for _, videoMeta := range updateVideoMeta {
+			if err := db.Videos.Upsert(ctx.Request().Context(), videoMeta.ID, db.UpsertVideoOptions{
+				VID:              videoMeta.VID,
+				OriginCoverURLs:  videoMeta.OriginCoverURLs,
+				DynamicCoverURLs: videoMeta.DynamicCoverURLs,
+				CreatedAt:        videoMeta.CreatedAt,
+			}); err != nil && err != db.ErrVideoExists {
+				log.Error("Failed to update video meta data: %v", err)
+				continue
+			}
+		}
+
 	default:
 		ctx.Error(http.StatusBadRequest, errors.Errorf("unexpected report type %q", req.Type))
 		return

@@ -32,5 +32,12 @@ type CreateVideo struct {
 	VideoRatio       string       `json:"video_ratio"`
 	VideoURLs        []string     `json:"video_urls"`
 	VideoCDNURL      string       `json:"video_cdn_url"`
-	CreatedAt        time.Time    `json:"created_at"`
+}
+
+type UpdateVideoMeta struct {
+	ID               string    `json:"id"`
+	VID              string    `json:"vid"`
+	OriginCoverURLs  []string  `json:"origin_cover_urls"`
+	DynamicCoverURLs []string  `json:"dynamic_cover_urls"`
+	CreatedAt        time.Time `json:"created_at"`
 }
