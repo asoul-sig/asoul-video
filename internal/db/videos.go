@@ -43,6 +43,7 @@ type Video struct {
 	VID              string             `db:"vid" json:"vid"`
 	AuthorSecUID     model.MemberSecUID `db:"author_sec_id" json:"author_sec_uid"`
 	Author           *Member            `db:",inline" json:"author"`
+	Statistic        model.Statistic    `db:",inline" json:"statistic"`
 	Description      string             `db:"description" json:"description"`
 	TextExtra        []string           `db:"text_extra" json:"text_extra"`
 	OriginCoverURLs  []string           `db:"origin_cover_urls" json:"origin_cover_urls"`
