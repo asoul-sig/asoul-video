@@ -84,9 +84,18 @@ func (*Source) Report(ctx context.Context) {
 				VideoWidth:       createVideo.VideoWidth,
 				VideoDuration:    createVideo.VideoDuration,
 				VideoRatio:       createVideo.VideoRatio,
-			}); err != nil && err != db.ErrVideoExists {
+			}); err != nil {
 				log.Error("Failed to create new video: %v", err)
 				continue
+			}
+
+			if err := db.Statistics.Create(ctx.Request().Context(), createVideo.ID, db.CreateStatisticOptions{
+				Share:   createVideo.Share,
+				Forward: createVideo.Forward,
+				Digg:    createVideo.Digg,
+				Play:    createVideo.Play,
+			}); err != nil {
+				log.Error("Failed to create video statistic: %v", err)
 			}
 
 			for _, videoURL := range createVideo.VideoURLs {
@@ -95,7 +104,6 @@ func (*Source) Report(ctx context.Context) {
 						continue
 					}
 					log.Error("Failed to create video %q url: %v", createVideo.ID, err)
-					continue
 				}
 			}
 		}
@@ -115,7 +123,15 @@ func (*Source) Report(ctx context.Context) {
 				CreatedAt:        videoMeta.CreatedAt,
 			}); err != nil {
 				log.Error("Failed to update video meta data: %v", err)
-				continue
+			}
+
+			if err := db.Statistics.Create(ctx.Request().Context(), videoMeta.ID, db.CreateStatisticOptions{
+				Share:   videoMeta.Share,
+				Forward: videoMeta.Forward,
+				Digg:    videoMeta.Digg,
+				Play:    videoMeta.Play,
+			}); err != nil {
+				log.Error("Failed to create video statistic: %v", err)
 			}
 		}
 

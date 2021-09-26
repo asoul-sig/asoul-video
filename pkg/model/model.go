@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+type Statistic struct {
+	Share   int64 `json:"share"`
+	Forward int64 `json:"forward"`
+	Digg    int64 `json:"digg"`
+	Play    int64 `json:"play"`
+}
+
 type UpdateMember struct {
 	SecUID    MemberSecUID `json:"sec_uid"`
 	UID       string       `json:"uid"`
@@ -32,6 +39,8 @@ type CreateVideo struct {
 	VideoRatio       string       `json:"video_ratio"`
 	VideoURLs        []string     `json:"video_urls"`
 	VideoCDNURL      string       `json:"video_cdn_url"`
+
+	Statistic
 }
 
 type UpdateVideoMeta struct {
@@ -40,4 +49,6 @@ type UpdateVideoMeta struct {
 	OriginCoverURLs  []string  `json:"origin_cover_urls"`
 	DynamicCoverURLs []string  `json:"dynamic_cover_urls"`
 	CreatedAt        time.Time `json:"created_at"`
+
+	Statistic
 }
