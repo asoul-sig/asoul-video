@@ -22,8 +22,9 @@ var _ VideosStore = (*videos)(nil)
 var Videos VideosStore
 
 type VideosStore interface {
-	// Create creates a new video record with the given options.
-	Create(ctx context.Context, id string, opts CreateVideoOptions) error
+	// Upsert creates a new video record with the given options.
+	// If the video is already exists, it will update it.
+	Upsert(ctx context.Context, id string, opts UpsertVideoOptions) error
 	// GetByID returns video with the given id, it returns `ErrVideoNotFound` error if video does not exist.
 	GetByID(ctx context.Context, id string) (*Video, error)
 	// List returns the video list.
@@ -57,7 +58,7 @@ type videos struct {
 	sqlbuilder.Database
 }
 
-type CreateVideoOptions struct {
+type UpsertVideoOptions struct {
 	VID              string
 	AuthorSecUID     model.MemberSecUID
 	Description      string
@@ -73,7 +74,7 @@ type CreateVideoOptions struct {
 
 var ErrVideoExists = errors.New("duplicate video")
 
-func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions) error {
+func (db *videos) Upsert(ctx context.Context, id string, opts UpsertVideoOptions) error {
 	if opts.CreatedAt.IsZero() {
 		opts.CreatedAt = time.Now()
 	}
@@ -83,12 +84,36 @@ func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions
 		Values(id, opts.VID, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.CreatedAt).
 		Exec()
 	if err != nil {
-		if dbutil.IsUniqueViolation(err, "videos_pkey") {
-			return ErrVideoExists
-		}
-		return err
-	}
+		return errors.Wrap(err, "insert video")
 
+	} else if dbutil.IsUniqueViolation(err, "videos_pkey") {
+		// Update video info if it has to be.
+		updateSets := make([]interface{}, 0, 8)
+		if opts.VID != "" {
+			updateSets = append(updateSets, "vid", opts.VID)
+		}
+		if len(opts.OriginCoverURLs) > 0 {
+			updateSets = append(updateSets, "origin_cover_urls", opts.OriginCoverURLs)
+		}
+		if len(opts.DynamicCoverURLs) > 0 {
+			updateSets = append(updateSets, "dynamic_cover_urls", opts.DynamicCoverURLs)
+		}
+		if !opts.CreatedAt.IsZero() { // We can't get the video publish time from the list API, and the update_video_meta crawler will set it.
+			updateSets = append(updateSets, "created_at", opts.CreatedAt)
+		}
+		if len(updateSets) == 0 {
+			return nil
+		}
+
+		updateSets = append(updateSets, "update_at", time.Now())
+		_, err = db.WithContext(ctx).Update("videos").
+			Set(updateSets...).
+			Where("id = ?", id).Exec()
+		if err != nil {
+			return errors.Wrap(err, "update video")
+		}
+
+	}
 	return nil
 }
 
