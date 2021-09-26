@@ -91,6 +91,9 @@ func (*Source) Report(ctx context.Context) {
 
 			for _, videoURL := range createVideo.VideoURLs {
 				if err := db.VideoURLs.Create(ctx.Request().Context(), createVideo.ID, videoURL); err != nil {
+					if err == db.ErrVideoURLExists {
+						continue
+					}
 					log.Error("Failed to create video %q url: %v", createVideo.ID, err)
 					continue
 				}
