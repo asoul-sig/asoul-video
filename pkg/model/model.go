@@ -9,11 +9,11 @@ import (
 )
 
 type Statistic struct {
-	Share   int64 `json:"share"`
-	Forward int64 `json:"forward"`
-	Digg    int64 `json:"digg"`
-	Play    int64 `json:"play"`
-	Comment int64 `json:"comment"`
+	Share   int64 `db:"share" json:"share"`
+	Forward int64 `db:"forward" json:"forward"`
+	Digg    int64 `db:"digg" json:"digg"`
+	Play    int64 `db:"play" json:"play"`
+	Comment int64 `db:"comment" json:"comment"`
 }
 
 type UpdateMember struct {
