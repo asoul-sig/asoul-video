@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS statistics (
     forward    INT                      NOT NULL,
     digg       INT                      NOT NULL,
     play       INT                      NOT NULL,
+    comment    INT                      NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 

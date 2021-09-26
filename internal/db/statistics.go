@@ -30,6 +30,7 @@ type Statistic struct {
 	Forward   int64     `db:"forward" json:"forward"`
 	Digg      int64     `db:"digg" json:"digg"`
 	Play      int64     `db:"play" json:"play"`
+	Comment   int64     `db:"comment" json:"comment"`
 	CreatedAt time.Time `db:"created_at" json:"-"`
 }
 
@@ -42,16 +43,17 @@ type CreateStatisticOptions struct {
 	Forward int64
 	Digg    int64
 	Play    int64
+	Comment int64
 }
 
 func (db *statistics) Create(ctx context.Context, id string, opts CreateStatisticOptions) error {
-	if opts.Share+opts.Forward+opts.Digg+opts.Play == 0 {
+	if opts.Share+opts.Forward+opts.Digg+opts.Play+opts.Comment == 0 {
 		return nil
 	}
 
 	_, err := db.WithContext(ctx).InsertInto("statistics").
-		Columns("id", "share", "forward", "digg", "play").
-		Values(id, opts.Share, opts.Forward, opts.Digg, opts.Play).
+		Columns("id", "share", "forward", "digg", "play", "comment").
+		Values(id, opts.Share, opts.Forward, opts.Digg, opts.Play, opts.Comment).
 		Exec()
 	return err
 }

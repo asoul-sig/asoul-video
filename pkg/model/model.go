@@ -13,6 +13,7 @@ type Statistic struct {
 	Forward int64 `json:"forward"`
 	Digg    int64 `json:"digg"`
 	Play    int64 `json:"play"`
+	Comment int64 `json:"comment"`
 }
 
 type UpdateMember struct {
