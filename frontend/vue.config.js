@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: 'https://asoul.cdn.n3ko.co/',
+    publicPath: process.env.NODE_ENV === 'production' ? 'https://asoul.cdn.n3ko.co/' : '/',
     transpileDependencies: [
         'vuetify'
     ]

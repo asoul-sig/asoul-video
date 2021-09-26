@@ -20,7 +20,10 @@
         <v-col
             v-for="v in videos"
             :key="v.id"
-            :cols="3"
+            :xl="3"
+            :lg="3"
+            :md="3"
+            :sm="6"
         >
           <v-card>
             <v-img
