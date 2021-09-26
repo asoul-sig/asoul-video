@@ -84,7 +84,6 @@ func (*Source) Report(ctx context.Context) {
 				VideoWidth:       createVideo.VideoWidth,
 				VideoDuration:    createVideo.VideoDuration,
 				VideoRatio:       createVideo.VideoRatio,
-				CreatedAt:        createVideo.CreatedAt,
 			}); err != nil && err != db.ErrVideoExists {
 				log.Error("Failed to create new video: %v", err)
 				continue
