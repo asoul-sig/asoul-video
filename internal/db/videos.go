@@ -38,6 +38,7 @@ func NewVideosStore(db sqlbuilder.Database) VideosStore {
 
 type Video struct {
 	ID               string             `db:"id" json:"id"`
+	VID              string             `db:"vid" json:"vid"`
 	AuthorSecUID     model.MemberSecUID `db:"author_sec_id" json:"author_sec_uid"`
 	Author           *Member            `db:",inline" json:"author"`
 	Description      string             `db:"description" json:"description"`
@@ -57,6 +58,7 @@ type videos struct {
 }
 
 type CreateVideoOptions struct {
+	VID              string
 	AuthorSecUID     model.MemberSecUID
 	Description      string
 	TextExtra        []string
@@ -77,8 +79,8 @@ func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions
 	}
 
 	_, err := db.WithContext(ctx).InsertInto("videos").
-		Columns("id", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "created_at").
-		Values(id, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.CreatedAt).
+		Columns("id", "vid", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "created_at").
+		Values(id, opts.VID, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.CreatedAt).
 		Exec()
 	if err != nil {
 		if dbutil.IsUniqueViolation(err, "videos_pkey") {

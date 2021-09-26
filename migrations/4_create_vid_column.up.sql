@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE videos
+    ADD COLUMN vid TEXT;
+
+COMMIT;
