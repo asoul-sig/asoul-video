@@ -21,8 +21,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Create frontend dist folder
-        run: mkdir frontend/dist/ && touch frontend/dist/tmp
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v2.4.0
         with:
@@ -51,8 +49,6 @@ jobs:
           go-version: 1.16.x
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Create frontend dist folder
-        run: mkdir frontend/dist/ && touch frontend/dist/tmp
       - name: Run tests
         run: go test -v -race ./...
         env:
