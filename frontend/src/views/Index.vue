@@ -36,6 +36,7 @@
             </v-img>
 
             <v-card-actions>
+              <span class="grey--text text--darken-1">{{ new Date(v.created_at).toLocaleDateString() }}</span>
               <v-spacer></v-spacer>
               <v-btn icon @click="playVideo(v)">
                 <v-icon>mdi-play</v-icon>
