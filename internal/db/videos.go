@@ -75,10 +75,6 @@ type UpsertVideoOptions struct {
 var ErrVideoExists = errors.New("duplicate video")
 
 func (db *videos) Upsert(ctx context.Context, id string, opts UpsertVideoOptions) error {
-	if opts.CreatedAt.IsZero() {
-		opts.CreatedAt = time.Now()
-	}
-
 	_, err := db.WithContext(ctx).InsertInto("videos").
 		Columns("id", "vid", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "created_at").
 		Values(id, opts.VID, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.CreatedAt).
