@@ -20,6 +20,7 @@ type UpdateMember struct {
 
 type CreateVideo struct {
 	ID               string       `json:"id"`
+	VID              string       `json:"vid"`
 	AuthorSecUID     MemberSecUID `json:"author_sec_uid"`
 	Description      string       `json:"description"`
 	TextExtra        []string     `json:"text_extra"`

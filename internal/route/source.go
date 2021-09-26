@@ -73,7 +73,8 @@ func (*Source) Report(ctx context.Context) {
 		}
 
 		for _, createVideo := range createVideos {
-			if err := db.Videos.Create(ctx.Request().Context(), createVideo.ID, db.CreateVideoOptions{
+			if err := db.Videos.Upsert(ctx.Request().Context(), createVideo.ID, db.UpsertVideoOptions{
+				VID:              createVideo.VID,
 				AuthorSecUID:     createVideo.AuthorSecUID,
 				Description:      createVideo.Description,
 				TextExtra:        createVideo.TextExtra,
