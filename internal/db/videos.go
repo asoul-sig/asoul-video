@@ -103,7 +103,7 @@ func (db *videos) Upsert(ctx context.Context, id string, opts UpsertVideoOptions
 				return nil
 			}
 
-			updateSets = append(updateSets, "update_at", time.Now())
+			updateSets = append(updateSets, "updated_at", time.Now())
 			_, err = db.WithContext(ctx).Update("videos").
 				Set(updateSets...).
 				Where("id = ?", id).Exec()
