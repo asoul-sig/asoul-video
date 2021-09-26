@@ -83,7 +83,7 @@ export default {
   methods: {
     getVideos(page) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/videos?page=' + page).then(res => {
+        axios.get('https://asoul.cdn.n3ko.co/api/videos?page=' + page).then(res => {
           this.videos = this.videos.concat(res.data.data)
           resolve()
         }).catch(err => {
