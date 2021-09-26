@@ -94,6 +94,7 @@ func (*Source) Report(ctx context.Context) {
 				Forward: createVideo.Forward,
 				Digg:    createVideo.Digg,
 				Play:    createVideo.Play,
+				Comment: createVideo.Comment,
 			}); err != nil {
 				log.Error("Failed to create video statistic: %v", err)
 			}
@@ -130,6 +131,7 @@ func (*Source) Report(ctx context.Context) {
 				Forward: videoMeta.Forward,
 				Digg:    videoMeta.Digg,
 				Play:    videoMeta.Play,
+				Comment: videoMeta.Comment,
 			}); err != nil {
 				log.Error("Failed to create video statistic: %v", err)
 			}
