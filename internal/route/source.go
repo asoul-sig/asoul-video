@@ -73,7 +73,7 @@ func (*Source) Report(ctx context.Context) {
 		}
 
 		for _, createVideo := range createVideos {
-			if err := db.Videos.Upsert(ctx.Request().Context(), createVideo.ID, db.UpsertVideoOptions{
+			if err := db.Videos.Create(ctx.Request().Context(), createVideo.ID, db.CreateVideoOptions{
 				VID:              createVideo.VID,
 				AuthorSecUID:     createVideo.AuthorSecUID,
 				Description:      createVideo.Description,
@@ -101,19 +101,19 @@ func (*Source) Report(ctx context.Context) {
 		}
 
 	case model.ReportTypeUpdateVideoMeta:
-		var updateVideoMeta []model.UpdateVideoMeta
+		var updateVideoMeta []*model.UpdateVideoMeta
 		if err := jsoniter.Unmarshal(req.Data, &updateVideoMeta); err != nil {
 			ctx.Error(http.StatusBadRequest, err)
 			return
 		}
 
 		for _, videoMeta := range updateVideoMeta {
-			if err := db.Videos.Upsert(ctx.Request().Context(), videoMeta.ID, db.UpsertVideoOptions{
+			if err := db.Videos.Update(ctx.Request().Context(), videoMeta.ID, db.UpdateVideoOptions{
 				VID:              videoMeta.VID,
 				OriginCoverURLs:  videoMeta.OriginCoverURLs,
 				DynamicCoverURLs: videoMeta.DynamicCoverURLs,
 				CreatedAt:        videoMeta.CreatedAt,
-			}); err != nil && err != db.ErrVideoExists {
+			}); err != nil {
 				log.Error("Failed to update video meta data: %v", err)
 				continue
 			}

@@ -22,9 +22,10 @@ var _ VideosStore = (*videos)(nil)
 var Videos VideosStore
 
 type VideosStore interface {
-	// Upsert creates a new video record with the given options.
-	// If the video is already exists, it will update it.
-	Upsert(ctx context.Context, id string, opts UpsertVideoOptions) error
+	// Create creates a new video record with the given options.
+	Create(ctx context.Context, id string, opts CreateVideoOptions) error
+	// Update updates the video with the given options.
+	Update(ctx context.Context, id string, opts UpdateVideoOptions) error
 	// GetByID returns video with the given id, it returns `ErrVideoNotFound` error if video does not exist.
 	GetByID(ctx context.Context, id string) (*Video, error)
 	// List returns the video list.
@@ -58,7 +59,7 @@ type videos struct {
 	sqlbuilder.Database
 }
 
-type UpsertVideoOptions struct {
+type CreateVideoOptions struct {
 	VID              string
 	AuthorSecUID     model.MemberSecUID
 	Description      string
@@ -74,43 +75,63 @@ type UpsertVideoOptions struct {
 
 var ErrVideoExists = errors.New("duplicate video")
 
-func (db *videos) Upsert(ctx context.Context, id string, opts UpsertVideoOptions) error {
+func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions) error {
 	_, err := db.WithContext(ctx).InsertInto("videos").
 		Columns("id", "vid", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "created_at").
 		Values(id, opts.VID, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.CreatedAt).
 		Exec()
 	if err != nil {
 		if dbutil.IsUniqueViolation(err, "videos_pkey") {
-			// Update video info if it has to be.
-			updateSets := make([]interface{}, 0, 8)
-			if opts.VID != "" {
-				updateSets = append(updateSets, "vid", opts.VID)
-			}
-			if len(opts.OriginCoverURLs) > 0 {
-				updateSets = append(updateSets, "origin_cover_urls", opts.OriginCoverURLs)
-			}
-			if len(opts.DynamicCoverURLs) > 0 {
-				updateSets = append(updateSets, "dynamic_cover_urls", opts.DynamicCoverURLs)
-			}
-			if !opts.CreatedAt.IsZero() { // We can't get the video publish time from the list API, and the update_video_meta crawler will set it.
-				updateSets = append(updateSets, "created_at", opts.CreatedAt)
-			}
-			if len(updateSets) == 0 {
-				return nil
-			}
-
-			updateSets = append(updateSets, "updated_at", time.Now())
-			_, err = db.WithContext(ctx).Update("videos").
-				Set(updateSets...).
-				Where("id = ?", id).Exec()
-			if err != nil {
+			if err := db.Update(ctx, id, UpdateVideoOptions{
+				VID:              opts.VID,
+				OriginCoverURLs:  opts.OriginCoverURLs,
+				DynamicCoverURLs: opts.DynamicCoverURLs,
+				CreatedAt:        opts.CreatedAt,
+			}); err != nil {
 				return errors.Wrap(err, "update video")
 			}
 		} else {
-			return errors.Wrap(err, "insert video")
+			return errors.Wrap(err, "create video")
 		}
 	}
 	return nil
+}
+
+type UpdateVideoOptions struct {
+	VID              string
+	OriginCoverURLs  []string
+	DynamicCoverURLs []string
+	CreatedAt        time.Time
+}
+
+func (db *videos) Update(ctx context.Context, id string, opts UpdateVideoOptions) error {
+	_, err := db.GetByID(ctx, id)
+	if err != nil {
+		return errors.Wrap(err, "get video by id")
+	}
+
+	updateSets := make([]interface{}, 0, 8)
+	if opts.VID != "" {
+		updateSets = append(updateSets, "vid", opts.VID)
+	}
+	if len(opts.OriginCoverURLs) > 0 {
+		updateSets = append(updateSets, "origin_cover_urls", opts.OriginCoverURLs)
+	}
+	if len(opts.DynamicCoverURLs) > 0 {
+		updateSets = append(updateSets, "dynamic_cover_urls", opts.DynamicCoverURLs)
+	}
+	if !opts.CreatedAt.IsZero() {
+		updateSets = append(updateSets, "created_at", opts.CreatedAt)
+	}
+	if len(updateSets) == 0 {
+		return nil
+	}
+
+	updateSets = append(updateSets, "updated_at", time.Now())
+	_, err = db.WithContext(ctx).Update("videos").
+		Set(updateSets...).
+		Where("id = ?", id).Exec()
+	return err
 }
 
 var ErrVideoNotFound = errors.New("video dose not exist")
