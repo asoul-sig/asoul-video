@@ -32,13 +32,13 @@ CREATE VIEW video_list AS (
                                 FROM videos JOIN video_urls ON video_urls.video_id = videos.id
                                 GROUP BY videos.id) AS v
                                JOIN members ON members.sec_uid = v.author_sec_id
-                               JOIN (SELECT *
-                                     FROM statistics JOIN (SELECT id AS statistic_id, MAX(created_at) AS created_at
-                                                           FROM statistics
-                                                           GROUP BY id) AS latest_s
-                                                          ON "statistics".id = latest_s.statistic_id AND
-                                                             "statistics".created_at =
-                                                             latest_s.created_at) AS statistics
-                                    ON statistics.id = v.id );
+                               LEFT JOIN (SELECT *
+                                          FROM statistics JOIN (SELECT id AS statistic_id, MAX(created_at) AS created_at
+                                                                FROM statistics
+                                                                GROUP BY id) AS latest_s
+                                                               ON "statistics".id = latest_s.statistic_id AND
+                                                                  "statistics".created_at =
+                                                                  latest_s.created_at) AS statistics
+                                         ON statistics.id = v.id );
 
 COMMIT;
