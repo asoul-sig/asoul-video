@@ -16,6 +16,32 @@
     </v-dialog>
 
     <v-container>
+      <h2 class="text-center pa-8">A-SOUL 抖音视频 All in one!</h2>
+      <v-row
+          justify="center"
+          no-gutters
+      >
+        <v-text-field
+            ref="searchInput"
+            v-model="searchString"
+            class="mx-2 mx-md-4 rounded-lg justify-center"
+            placeholder="搜索..."
+            autocomplete="off"
+            dense
+            hide-details
+            solo
+            style="max-width: 450px;"
+            @input="searchChange"
+        >
+        </v-text-field>
+      </v-row>
+      <v-row>
+
+      </v-row>
+    </v-container>
+
+
+    <v-container>
       <v-row dense>
         <v-col
             v-for="v in videos"
@@ -59,6 +85,18 @@
             </v-card-actions>
           </v-card>
         </v-col>
+        <v-col
+            :xl="3"
+            :lg="3"
+            :md="3"
+            :sm="12"
+        >
+          <v-skeleton-loader
+              v-if="isLoading"
+              class="mx-auto"
+              type="card"
+          ></v-skeleton-loader>
+        </v-col>
       </v-row>
     </v-container>
   </div>
@@ -74,6 +112,8 @@ export default {
 
   data() {
     return {
+      isLoading: true,
+      isEnd: false,
       currentPage: 1,
       playerDialog: false,
       playerOptions: {
@@ -87,22 +127,40 @@ export default {
           src: ''
         }]
       },
-      videos: []
+      videos: [],
+
+      searchString: ''
     }
   },
 
   mounted() {
-    this.getVideos(this.currentPage)
+    this.getVideos()
     this.onScroll()
   },
 
   methods: {
-    getVideos(page) {
+    getVideos() {
       return new Promise((resolve, reject) => {
-        axios.get('https://asoul.cdn.n3ko.co/api/videos?page=' + page).then(res => {
+        if (this.isEnd) {
+          resolve()
+          return
+        }
+        this.isLoading = true
+        axios.get('https://asoul.cdn.n3ko.co/api/videos', {
+          params: {
+            page: this.currentPage,
+            keyword: this.searchString,
+          }
+        }).then(res => {
+          if (res.data.data.length === 0) {
+            this.isEnd = true
+          }
+
           this.videos = this.videos.concat(res.data.data)
+          this.isLoading = false
           resolve()
         }).catch(err => {
+          this.isLoading = false
           reject(err)
         })
       })
@@ -131,14 +189,26 @@ export default {
         let bottomOfWindow = document.documentElement.offsetHeight - document.documentElement.scrollTop - window.innerHeight <= 200
         if (bottomOfWindow && isLoading === false) {
           isLoading = true
-          this.getVideos(++this.currentPage).then(() => {
+          this.currentPage++
+          this.getVideos().then(() => {
             isLoading = false
           }).catch(() => {
             isLoading = false
           })
         }
       }
-    }
+    },
+
+    searchChange() {
+      this.isEnd = false
+      this.videos = []
+      this.currentPage = 1
+      this.getVideos()
+    },
+
+    resetSearch() {
+      this.searchString = ''
+    },
   },
 
   components: {

@@ -3,16 +3,16 @@
     <v-app-bar
         app
         color="primary"
-        dark
     >
-      <div class="d-flex align-center">
-        ASOUL-Video
+      <div class="d-flex align-center white--text">
+        A-SOUL Video
       </div>
       <v-spacer></v-spacer>
       <v-btn
           href="https://github.com/asoul-video"
           target="_blank"
           text
+          class="white--text"
       >
         <span class="mr-2">GitHub</span>
         <v-icon>mdi-open-in-new</v-icon>
@@ -28,9 +28,5 @@
 <script>
 export default {
   name: 'App',
-
-  data: () => ({
-    //
-  }),
 };
 </script>
