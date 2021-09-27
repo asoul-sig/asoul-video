@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
+    "qs": "^6.10.1",
     "vue": "^2.6.11",
     "vue-router": "^3.5.2",
     "vue-video-player": "^5.0.2",
