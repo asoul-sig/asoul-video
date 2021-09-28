@@ -89,20 +89,22 @@
                 height="220px"
             >
               <v-card-title v-text="v.description"></v-card-title>
+              <v-row class="pl-7 pb-5 pt-1">
+                <v-icon color="red lighten-2" dense>mdi-heart</v-icon>
+                <span class="white--text mr-2">{{ v.statistic.digg }}</span>
+
+                <v-icon color="white">mdi-share</v-icon>
+                <span class="white--text mr-2"> {{ v.statistic.share }}</span>
+
+                <v-icon color="white">mdi-comment</v-icon>
+                <span class="white--text"> {{ v.statistic.comment }}</span>
+              </v-row>
             </v-img>
 
             <v-card-actions>
-              <div>
-                <v-icon color="red lighten-2">mdi-heart</v-icon>
-                <span class="grey--text text--darken-1">{{ v.statistic.digg }}</span>
-
-                <v-icon color="gray" class="hidden-md-and-up">mdi-share</v-icon>
-                <span class="grey--text text--darken-1 hidden-md-and-up"> {{ v.statistic.share }}</span>
-
-                <v-icon color="gray" class="hidden-md-and-up">mdi-comment</v-icon>
-                <span class="grey--text text--darken-1 hidden-md-and-up"> {{ v.statistic.comment }}</span>
-              </div>
-
+              <v-avatar size="36px">
+                <img :src="v.author.avatar_url" :alt="v.author.name"/>
+              </v-avatar>
               <v-spacer></v-spacer>
               <span class="grey--text text--darken-1">{{ new Date(v.created_at).toLocaleDateString() }}</span>
               <v-spacer></v-spacer>
