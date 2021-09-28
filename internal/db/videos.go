@@ -71,15 +71,14 @@ type CreateVideoOptions struct {
 	VideoWidth       int
 	VideoDuration    int64
 	VideoRatio       string
-	CreatedAt        time.Time
 }
 
 var ErrVideoExists = errors.New("duplicate video")
 
 func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions) error {
 	_, err := db.WithContext(ctx).InsertInto("videos").
-		Columns("id", "vid", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio", "created_at").
-		Values(id, opts.VID, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio, opts.CreatedAt).
+		Columns("id", "vid", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio").
+		Values(id, opts.VID, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio).
 		Exec()
 	if err != nil {
 		if dbutil.IsUniqueViolation(err, "videos_pkey") {
@@ -87,7 +86,6 @@ func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions
 				VID:              opts.VID,
 				OriginCoverURLs:  opts.OriginCoverURLs,
 				DynamicCoverURLs: opts.DynamicCoverURLs,
-				CreatedAt:        opts.CreatedAt,
 			}); err != nil {
 				return errors.Wrap(err, "update video")
 			}
