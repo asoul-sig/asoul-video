@@ -1,8 +1,8 @@
 BEGIN;
 
-DROP TABLE IF EXISTS statistics;
-
 DROP VIEW IF EXISTS video_list;
+
+DROP TABLE IF EXISTS statistics;
 
 CREATE VIEW video_list AS (
                           SELECT v.*,

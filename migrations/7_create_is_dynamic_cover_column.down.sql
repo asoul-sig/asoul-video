@@ -1,9 +1,9 @@
 BEGIN;
 
+DROP VIEW IF EXISTS video_list;
+
 ALTER TABLE videos
     DROP COLUMN IF EXISTS is_dynamic_cover;
-
-DROP VIEW IF EXISTS video_list;
 
 CREATE VIEW video_list AS (
                           SELECT v.*,
