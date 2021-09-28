@@ -80,6 +80,7 @@ func (*Source) Report(ctx context.Context) {
 				TextExtra:        createVideo.TextExtra,
 				OriginCoverURLs:  createVideo.OriginCoverURLs,
 				DynamicCoverURLs: createVideo.DynamicCoverURLs,
+				IsDynamicCover:   createVideo.IsDynamicCover,
 				VideoHeight:      createVideo.VideoHeight,
 				VideoWidth:       createVideo.VideoWidth,
 				VideoDuration:    createVideo.VideoDuration,
@@ -121,6 +122,7 @@ func (*Source) Report(ctx context.Context) {
 				VID:              videoMeta.VID,
 				OriginCoverURLs:  videoMeta.OriginCoverURLs,
 				DynamicCoverURLs: videoMeta.DynamicCoverURLs,
+				IsDynamicCover:   videoMeta.IsDynamicCover,
 				CreatedAt:        videoMeta.CreatedAt,
 			}); err != nil {
 				log.Error("Failed to update video meta data: %v", err)
