@@ -1,7 +1,7 @@
 BEGIN;
 
 ALTER TABLE videos
-    ADD COLUMN is_dynamic_cover BOOLEAN;
+    ADD COLUMN is_dynamic_cover BOOLEAN NOT NULL DEFAULT FALSE;
 
 DROP VIEW IF EXISTS video_list;
 
