@@ -86,6 +86,7 @@ func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions
 		if dbutil.IsUniqueViolation(err, "videos_pkey") {
 			if err := db.Update(ctx, id, UpdateVideoOptions{
 				VID:              opts.VID,
+				IsDynamicCover:   opts.IsDynamicCover,
 				OriginCoverURLs:  opts.OriginCoverURLs,
 				DynamicCoverURLs: opts.DynamicCoverURLs,
 			}); err != nil {
