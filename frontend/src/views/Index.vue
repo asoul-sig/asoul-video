@@ -40,7 +40,7 @@
           no-gutters
       >
         <v-combobox
-            v-model="members"
+            v-model="searchMembers"
             :items="memberItems"
             multiple
             style="max-width: 450px;"
@@ -64,7 +64,10 @@
           </template>
 
           <template v-slot:item="{ index, item }">
-            {{ item.text }}
+            <v-avatar size="35" class="mr-3">
+              <v-img :src="members[item.value].avatar_url"></v-img>
+            </v-avatar>
+            <span>{{ item.text }}</span>
           </template>
         </v-combobox>
       </v-row>
@@ -96,7 +99,7 @@
                 <v-icon color="white">mdi-share</v-icon>
                 <span class="white--text mr-2"> {{ v.statistic.share }}</span>
 
-                <v-icon color="white">mdi-comment</v-icon>
+                <v-icon color="white" small>mdi-comment</v-icon>
                 <span class="white--text"> {{ v.statistic.comment }}</span>
               </v-row>
             </v-img>
@@ -163,7 +166,8 @@ export default {
       videos: [],
 
       searchString: '',
-      members: [],
+      searchMembers: [],
+      members: {},
       memberItems: [
         {
           text: '向晚 Ava',
@@ -195,6 +199,7 @@ export default {
   },
 
   mounted() {
+    this.getMembers()
     this.getVideos()
     this.onScroll()
   },
@@ -209,7 +214,7 @@ export default {
         this.isLoading = true
 
         let secUID = []
-        this.members.forEach((item) => {
+        this.searchMembers.forEach((item) => {
           secUID.push(item.value)
         })
 
@@ -232,6 +237,19 @@ export default {
           resolve()
         }).catch(err => {
           this.isLoading = false
+          reject(err)
+        })
+      })
+    },
+
+    getMembers() {
+      return new Promise((resolve, reject) => {
+        axios.get('https://asoul.cdn.n3ko.co/api/members').then(res => {
+          res.data.data.forEach((value) => {
+            this.members[value.sec_uid] = value
+          })
+          resolve()
+        }).catch(err => {
           reject(err)
         })
       })
@@ -283,7 +301,7 @@ export default {
 
     getCPName() {
       let index = 0
-      this.members.forEach((item) => {
+      this.searchMembers.forEach((item) => {
         index += item.key
       })
 
@@ -309,7 +327,7 @@ export default {
         '', // 13 向晚 珈乐 嘉然
         '', // 14 贝拉 珈乐 嘉然
         '', // 15 向晚 贝拉 珈乐 嘉然
-        '乃琳', // 16 乃琳
+        '', // 16 乃琳
         '果丹皮', // 17 向晚 乃琳
         '乃贝', // 18 贝拉 乃琳
         '', // 19 向晚 贝拉 乃琳
