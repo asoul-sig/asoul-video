@@ -83,7 +83,7 @@
         >
           <v-card>
             <v-img
-                :src="v.dynamic_cover_urls[0]"
+                :src="v.is_dynamic_cover ? v.dynamic_cover_urls[0] : v.dynamic_cover_urls[0].replaceAll('/obj/', '/') + '~c5_300x300.jpg'"
                 class="white--text align-end"
                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 height="220px"
