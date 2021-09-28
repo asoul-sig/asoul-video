@@ -34,6 +34,7 @@ type CreateVideo struct {
 	TextExtra        []string     `json:"text_extra"`
 	OriginCoverURLs  []string     `json:"origin_cover_urls"`
 	DynamicCoverURLs []string     `json:"dynamic_cover_urls"`
+	IsDynamicCover   bool         `json:"is_dynamic_cover"`
 	VideoHeight      int          `json:"video_height"`
 	VideoWidth       int          `json:"video_width"`
 	VideoDuration    int64        `json:"video_duration"`
@@ -49,6 +50,7 @@ type UpdateVideoMeta struct {
 	VID              string    `json:"vid"`
 	OriginCoverURLs  []string  `json:"origin_cover_urls"`
 	DynamicCoverURLs []string  `json:"dynamic_cover_urls"`
+	IsDynamicCover   bool      `json:"is_dynamic_cover"`
 	CreatedAt        time.Time `json:"created_at"`
 
 	Statistic
