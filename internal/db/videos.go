@@ -48,6 +48,7 @@ type Video struct {
 	TextExtra        []string           `db:"text_extra" json:"text_extra"`
 	OriginCoverURLs  []string           `db:"origin_cover_urls" json:"origin_cover_urls"`
 	DynamicCoverURLs []string           `db:"dynamic_cover_urls" json:"dynamic_cover_urls"`
+	IsDynamicCover   bool               `db:"is_dynamic_cover" json:"is_dynamic_cover"`
 	VideoHeight      int                `db:"video_height" json:"video_height"`
 	VideoWidth       int                `db:"video_width" json:"video_width"`
 	VideoDuration    int64              `db:"video_duration" json:"video_duration"`
@@ -67,6 +68,7 @@ type CreateVideoOptions struct {
 	TextExtra        []string
 	OriginCoverURLs  []string
 	DynamicCoverURLs []string
+	IsDynamicCover   bool
 	VideoHeight      int
 	VideoWidth       int
 	VideoDuration    int64
@@ -77,8 +79,8 @@ var ErrVideoExists = errors.New("duplicate video")
 
 func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions) error {
 	_, err := db.WithContext(ctx).InsertInto("videos").
-		Columns("id", "vid", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "video_height", "video_width", "video_duration", "video_ratio").
-		Values(id, opts.VID, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio).
+		Columns("id", "vid", "author_sec_id", "description", "text_extra", "origin_cover_urls", "dynamic_cover_urls", "is_dynamic_cover", "video_height", "video_width", "video_duration", "video_ratio").
+		Values(id, opts.VID, opts.AuthorSecUID, opts.Description, opts.TextExtra, opts.OriginCoverURLs, opts.DynamicCoverURLs, opts.IsDynamicCover, opts.VideoHeight, opts.VideoWidth, opts.VideoDuration, opts.VideoRatio).
 		Exec()
 	if err != nil {
 		if dbutil.IsUniqueViolation(err, "videos_pkey") {
@@ -98,6 +100,7 @@ func (db *videos) Create(ctx context.Context, id string, opts CreateVideoOptions
 
 type UpdateVideoOptions struct {
 	VID              string
+	IsDynamicCover   bool
 	OriginCoverURLs  []string
 	DynamicCoverURLs []string
 	CreatedAt        time.Time
@@ -109,7 +112,9 @@ func (db *videos) Update(ctx context.Context, id string, opts UpdateVideoOptions
 		return errors.Wrap(err, "get video by id")
 	}
 
-	updateSets := make([]interface{}, 0, 8)
+	updateSets := make([]interface{}, 0, 10)
+	updateSets = append(updateSets, "is_dynamic_cover", opts.IsDynamicCover)
+
 	if opts.VID != "" {
 		updateSets = append(updateSets, "vid", opts.VID)
 	}
