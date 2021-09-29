@@ -257,7 +257,7 @@ export default {
 
     playVideo(v) {
       this.playerDialog = true
-      this.playerOptions.sources[0].src = v.video_urls[0]
+      this.playerOptions.sources[0].src = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${v.vid}&ratio=720p&line=0`
       this.playerOptions.sources[0].poster = v.dynamic_cover_urls[0]
       if (this.$refs.videoPlayer !== undefined) {
         this.$refs.videoPlayer.player.play()
@@ -269,7 +269,7 @@ export default {
     },
 
     downloadVideo(v) {
-      window.open(v.video_urls[0])
+      window.open(`https://aweme.snssdk.com/aweme/v1/play/?video_id=${v.vid}&ratio=720p&line=0`)
     },
 
     onScroll() {
