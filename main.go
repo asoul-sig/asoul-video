@@ -56,7 +56,6 @@ func main() {
 		f.Group("/video", func() {
 			f.Get("/{id}", video.GetByID)
 			f.Get("/random", video.Random)
-			f.Get("/play/{id}", video.Play)
 		})
 	})
 
