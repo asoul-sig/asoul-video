@@ -30,6 +30,8 @@ type VideosStore interface {
 	GetByID(ctx context.Context, id string) (*Video, error)
 	// List returns the video list.
 	List(ctx context.Context, opts ListVideoOptions) ([]*Video, error)
+	// ListIDs returns all the video IDs.
+	ListIDs(ctx context.Context) ([]string, error)
 	// Random returns a video randomly.
 	Random(ctx context.Context) (*Video, error)
 }
@@ -200,6 +202,21 @@ func (db *videos) List(ctx context.Context, opts ListVideoOptions) ([]*Video, er
 		return nil, errors.Wrap(err, "get videos")
 	}
 	return videos, nil
+}
+
+func (db *videos) ListIDs(ctx context.Context) ([]string, error) {
+	var idRows []struct {
+		ID string `db:"id"`
+	}
+	if err := db.WithContext(ctx).Select("id").From("videos").All(&idRows); err != nil {
+		return nil, errors.Wrap(err, "select")
+	}
+
+	ids := make([]string, 0, len(idRows))
+	for _, row := range idRows {
+		ids = append(ids, row.ID)
+	}
+	return ids, nil
 }
 
 func (db *videos) Random(ctx context.Context) (*Video, error) {

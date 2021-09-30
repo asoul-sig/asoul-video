@@ -171,3 +171,13 @@ func (*Source) VideoURLs(ctx context.Context) {
 	}
 	ctx.Success(urls)
 }
+
+func (*Source) VideoIDs(ctx context.Context) {
+	uids, err := db.Videos.ListIDs(ctx.Request().Context())
+	if err != nil {
+		ctx.ServerError()
+		log.Error("Failed to get video ids: %v", err)
+		return
+	}
+	ctx.Success(uids)
+}

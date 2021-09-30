@@ -64,6 +64,7 @@ func main() {
 	f.Group("/source", func() {
 		f.Post("/report", source.Report)
 		f.Get("/video_urls", source.VideoURLs)
+		f.Get("/video_ids", source.VideoIDs)
 	}, source.VerifyKey(os.Getenv("SOURCE_REPORT_KEY")))
 
 	f.Get("/ping", func(ctx context.Context) {
