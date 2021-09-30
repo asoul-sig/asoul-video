@@ -130,6 +130,30 @@ func (*Source) Report(ctx context.Context) {
 			}
 		}
 
+	case model.ReportTypeComment:
+		var createComment []*model.CreateComment
+		if err := jsoniter.Unmarshal(req.Data, &createComment); err != nil {
+			ctx.Error(http.StatusBadRequest, err)
+			return
+		}
+
+		for _, comment := range createComment {
+			if err := db.Comments.Create(ctx.Request().Context(), comment.Cid, db.CreateCommentOptions{
+				VideoID:       comment.VideoID,
+				Text:          comment.Text,
+				TextClean:     comment.TextClean,
+				TextExtra:     comment.TextExtra,
+				UserNickname:  comment.UserNickname,
+				UserAvatarURI: comment.UserAvatarURI,
+				UserSecUID:    comment.UserSecUID,
+				CreatedAt:     comment.CreatedAt,
+			}); err != nil {
+				if err != db.ErrCommentExists {
+					log.Error("Failed to create new comment: %v", err)
+				}
+			}
+		}
+
 	default:
 		ctx.Error(http.StatusBadRequest, errors.Errorf("unexpected report type %q", req.Type))
 		return

@@ -5,6 +5,7 @@
 package model
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -54,4 +55,16 @@ type UpdateVideoMeta struct {
 	CreatedAt        time.Time `json:"created_at"`
 
 	Statistic
+}
+
+type CreateComment struct {
+	Cid           string          `json:"cid"`
+	VideoID       string          `json:"video_id"`
+	Text          string          `json:"text"`
+	TextClean     string          `json:"text_clean"`
+	TextExtra     json.RawMessage `json:"text_extra"`
+	UserNickname  string          `json:"user_nickname"`
+	UserAvatarURI string          `json:"user_avatar_uri"`
+	UserSecUID    string          `json:"user_sec_uid"`
+	CreatedAt     time.Time       `json:"created_at"`
 }

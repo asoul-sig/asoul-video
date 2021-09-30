@@ -20,4 +20,5 @@ const (
 	ReportTypeUpdateMember    ReportType = "update_member"
 	ReportTypeCreateVideo     ReportType = "create_video"
 	ReportTypeUpdateVideoMeta ReportType = "update_video_meta"
+	ReportTypeComment         ReportType = "comment"
 )

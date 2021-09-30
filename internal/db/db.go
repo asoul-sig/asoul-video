@@ -39,6 +39,7 @@ func Init() error {
 	Videos = NewVideosStore(db)
 	VideoURLs = NewVideoURLsStore(db)
 	Statistics = NewStatisticsStore(db)
+	Comments = NewCommentsStore(db)
 
 	return nil
 }
