@@ -51,6 +51,13 @@ func (db *statistics) Create(ctx context.Context, id string, opts CreateStatisti
 		return nil
 	}
 
+	var statistic Statistic
+	if err := db.WithContext(ctx).SelectFrom("statistic").Where(
+		"id = ? AND share = ? AND forward = ? AND digg = ? AND play = ? AND comment = ?",
+		id, opts.Share, opts.Forward, opts.Digg, opts.Play, opts.Comment).One(&statistic); err == nil {
+		return nil
+	}
+
 	_, err := db.WithContext(ctx).InsertInto("statistics").
 		Columns("id", "share", "forward", "digg", "play", "comment").
 		Values(id, opts.Share, opts.Forward, opts.Digg, opts.Play, opts.Comment).
