@@ -58,7 +58,8 @@ jobs:
 
       - name: Send notification to Discrod
         env:
+
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
-          args: 'The asoul-video backend has been deployed. https://github.com/asoul-video/asoul-video/commit/$GITHUB_SHA'
+          args: 'The asoul-video backend has been deployed. https://github.com/asoul-video/asoul-video/commit/{{ GITHUB_SHA }}'
