@@ -5,6 +5,7 @@
 package route
 
 import (
+	"encoding/json"
 	"net/http"
 
 	jsoniter "github.com/json-iterator/go"
@@ -132,12 +133,16 @@ func (*Source) Report(ctx context.Context) {
 
 	case model.ReportTypeComment:
 		var createComment []*model.CreateComment
-		if err := jsoniter.Unmarshal(req.Data, &createComment); err != nil {
+		if err := json.Unmarshal(req.Data, &createComment); err != nil {
 			ctx.Error(http.StatusBadRequest, err)
 			return
 		}
 
 		for _, comment := range createComment {
+			if comment.Text == "" {
+				continue
+			}
+
 			if err := db.Comments.Create(ctx.Request().Context(), comment.Cid, db.CreateCommentOptions{
 				VideoID:       comment.VideoID,
 				Text:          comment.Text,
