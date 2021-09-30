@@ -53,7 +53,6 @@ type Video struct {
 	VideoWidth       int                `db:"video_width" json:"video_width"`
 	VideoDuration    int64              `db:"video_duration" json:"video_duration"`
 	VideoRatio       string             `db:"video_ratio" json:"video_ratio"`
-	VideoURLs        []string           `db:"video_urls" json:"video_urls"`
 	CreatedAt        time.Time          `db:"created_at" json:"created_at"`
 }
 
