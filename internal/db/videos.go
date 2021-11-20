@@ -208,7 +208,7 @@ func (db *videos) ListIDs(ctx context.Context) ([]string, error) {
 	var idRows []struct {
 		ID string `db:"id"`
 	}
-	if err := db.WithContext(ctx).Select("id").From("videos").OrderBy("created_at").All(&idRows); err != nil {
+	if err := db.WithContext(ctx).Select("id").From("videos").OrderBy("id DESC").All(&idRows); err != nil {
 		return nil, errors.Wrap(err, "select")
 	}
 
