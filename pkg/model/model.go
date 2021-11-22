@@ -68,3 +68,8 @@ type CreateComment struct {
 	UserSecUID    string          `json:"user_sec_uid"`
 	CreatedAt     time.Time       `json:"created_at"`
 }
+
+type UpdateFacePoint struct {
+	ID         string          `json:"id"`
+	FacePoints json.RawMessage `json:"face_points"`
+}

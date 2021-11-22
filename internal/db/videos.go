@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"math/rand"
 	"time"
 
@@ -51,6 +52,7 @@ type Video struct {
 	OriginCoverURLs  []string           `db:"origin_cover_urls" json:"origin_cover_urls"`
 	DynamicCoverURLs []string           `db:"dynamic_cover_urls" json:"dynamic_cover_urls"`
 	IsDynamicCover   bool               `db:"is_dynamic_cover" json:"is_dynamic_cover"`
+	FacePoints       *dbutil.JSON       `db:"face_points" json:"face_points"`
 	VideoHeight      int                `db:"video_height" json:"video_height"`
 	VideoWidth       int                `db:"video_width" json:"video_width"`
 	VideoDuration    int64              `db:"video_duration" json:"video_duration"`
@@ -105,6 +107,7 @@ type UpdateVideoOptions struct {
 	IsDynamicCover   bool
 	OriginCoverURLs  []string
 	DynamicCoverURLs []string
+	FacePoints       json.RawMessage
 	CreatedAt        time.Time
 }
 
@@ -125,6 +128,9 @@ func (db *videos) Update(ctx context.Context, id string, opts UpdateVideoOptions
 	}
 	if len(opts.DynamicCoverURLs) > 0 {
 		updateSets = append(updateSets, "dynamic_cover_urls", opts.DynamicCoverURLs)
+	}
+	if len(opts.FacePoints) != 0 {
+		updateSets = append(updateSets, "face_points", opts.FacePoints)
 	}
 	if !opts.CreatedAt.IsZero() {
 		updateSets = append(updateSets, "created_at", opts.CreatedAt)

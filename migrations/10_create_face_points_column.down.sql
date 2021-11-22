@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE videos
+    DROP COLUMN IF EXISTS face_points;
+
+COMMIT;

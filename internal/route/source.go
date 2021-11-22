@@ -159,6 +159,19 @@ func (*Source) Report(ctx context.Context) {
 			}
 		}
 
+	case model.ReportTypeFacePoint:
+		var facePoint model.UpdateFacePoint
+		if err := json.Unmarshal(req.Data, &facePoint); err != nil {
+			ctx.Error(http.StatusBadRequest, err)
+			return
+		}
+
+		if err := db.Videos.Update(ctx.Request().Context(), facePoint.ID, db.UpdateVideoOptions{
+			FacePoints: facePoint.FacePoints,
+		}); err != nil {
+			log.Error("Failed to update video face point: %v", err)
+		}
+		
 	default:
 		ctx.Error(http.StatusBadRequest, errors.Errorf("unexpected report type %q", req.Type))
 		return

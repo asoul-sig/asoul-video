@@ -21,4 +21,5 @@ const (
 	ReportTypeCreateVideo     ReportType = "create_video"
 	ReportTypeUpdateVideoMeta ReportType = "update_video_meta"
 	ReportTypeComment         ReportType = "comment"
+	ReportTypeFacePoint       ReportType = "face_point"
 )
