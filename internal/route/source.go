@@ -171,7 +171,7 @@ func (*Source) Report(ctx context.Context) {
 		}); err != nil {
 			log.Error("Failed to update video face point: %v", err)
 		}
-		
+
 	default:
 		ctx.Error(http.StatusBadRequest, errors.Errorf("unexpected report type %q", req.Type))
 		return
