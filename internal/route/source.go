@@ -166,6 +166,7 @@ func (*Source) Report(ctx context.Context) {
 			return
 		}
 
+
 		if err := db.Videos.Update(ctx.Request().Context(), facePoint.ID, db.UpdateVideoOptions{
 			FacePoints:  facePoint.FacePoints,
 			CoverHeight: facePoint.CoverHeight,

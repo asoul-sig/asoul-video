@@ -133,7 +133,7 @@ func (db *videos) Update(ctx context.Context, id string, opts UpdateVideoOptions
 	if len(opts.DynamicCoverURLs) > 0 {
 		updateSets = append(updateSets, "dynamic_cover_urls", opts.DynamicCoverURLs)
 	}
-	if len(opts.FacePoints) != 0 {
+	if len(opts.FacePoints) > 4 {
 		updateSets = append(updateSets, "face_points", opts.FacePoints)
 	}
 	if opts.CoverHeight != 0 {
