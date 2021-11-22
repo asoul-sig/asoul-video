@@ -52,7 +52,7 @@ type Video struct {
 	OriginCoverURLs  []string           `db:"origin_cover_urls" json:"origin_cover_urls"`
 	DynamicCoverURLs []string           `db:"dynamic_cover_urls" json:"dynamic_cover_urls"`
 	IsDynamicCover   bool               `db:"is_dynamic_cover" json:"is_dynamic_cover"`
-	FacePoints       dbutil.JSON        `db:"face_points" json:"face_points"`
+	FacePoints       *dbutil.JSON       `db:"face_points" json:"face_points"`
 	VideoHeight      int                `db:"video_height" json:"video_height"`
 	VideoWidth       int                `db:"video_width" json:"video_width"`
 	VideoDuration    int64              `db:"video_duration" json:"video_duration"`
