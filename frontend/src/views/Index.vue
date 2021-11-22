@@ -86,7 +86,7 @@
         >
           <v-card>
             <v-img
-                :src="v.is_dynamic_cover ? v.dynamic_cover_urls[0] : v.dynamic_cover_urls[0].replace(/obj/g, '/').replace(/~(.*)/g, '') + '~c5_300x300.jpg'"
+                :src="v.is_dynamic_cover ? v.dynamic_cover_urls[0] : v.dynamic_cover_urls[0].replace(/obj\//g, '').replace(/~(.*)/g, '') + '~tplv-yykgsuqxec-imagexlite-61c10ff8ccdc26b60d901eaa5b1864f0.png'"
                 class="white--text align-end"
                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 height="220px"
