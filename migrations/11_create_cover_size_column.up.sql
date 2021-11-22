@@ -1,0 +1,9 @@
+BEGIN;
+
+ALTER TABLE videos
+    ADD COLUMN cover_width INT DEFAULT 0 NOT NULL;
+
+ALTER TABLE videos
+    ADD COLUMN cover_height INT DEFAULT 0 NOT NULL;
+
+COMMIT;

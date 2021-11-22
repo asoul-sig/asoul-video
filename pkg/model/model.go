@@ -70,6 +70,8 @@ type CreateComment struct {
 }
 
 type UpdateFacePoint struct {
-	ID         string          `json:"id"`
-	FacePoints json.RawMessage `json:"face_points"`
+	ID          string          `json:"id"`
+	FacePoints  json.RawMessage `json:"face_points"`
+	CoverWidth  int             `json:"cover_width"`
+	CoverHeight int             `json:"cover_height"`
 }
