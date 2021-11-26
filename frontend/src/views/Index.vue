@@ -77,7 +77,7 @@
     <v-container>
       <v-row dense>
         <v-col
-            v-for="v in videos"
+            v-for="(v, index) in videos"
             :key="v.id"
             :xl="3"
             :lg="3"
@@ -86,11 +86,14 @@
         >
           <v-card>
             <v-img
-                :src="v.is_dynamic_cover ? v.dynamic_cover_urls[0] : v.dynamic_cover_urls[0].replace(/obj/g, '').replace(/~(.*)/g, '') + '~c5_300x300.jpg'"
+                :ref="`cover-${index}`"
+                :src="setCover(index, v)"
                 class="white--text align-end"
+                :position="v.face_points.length > 0 ? 'bottom center' : 'center center'"
                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 height="220px"
             >
+              <span v-show="false">{{ v.face_points }}</span>
               <v-card-title v-text="v.description"></v-card-title>
               <v-row class="pl-7 pb-5 pt-1">
                 <v-icon color="red lighten-2" dense>mdi-heart</v-icon>
@@ -164,6 +167,7 @@ export default {
         }]
       },
       videos: [],
+      coverTemplate: '',
 
       searchString: '',
       searchMembers: [],
@@ -202,6 +206,9 @@ export default {
     this.getMembers()
     this.getVideos()
     this.onScroll()
+    this.getImagexTemplate().then(res => {
+      this.coverTemplate = res
+    })
   },
 
   methods: {
@@ -297,6 +304,41 @@ export default {
 
     resetSearch() {
       this.searchString = ''
+    },
+
+    setCover(index, v) {
+      let coverURL = v.dynamic_cover_urls[0].replace(/obj/g, '').replace(/~(.*)/g, '');
+      if (v.face_points.length > 0) {
+        let width = 285;
+        let scale = width / v.cover_width;
+        let faceYFrom = v.face_points[0].Min.Y * scale;
+        let faceYTo = v.face_points[0].Max.Y * scale;
+        let spaceHeight = (200 - (faceYTo - faceYFrom)) / 2
+        let imageHeight = (faceYTo + spaceHeight).toFixed()
+
+        let url = coverURL + `~tplv-crop-top:${width}:${imageHeight}.jpg`;
+        return url
+      }
+
+      return coverURL + this.coverTemplate
+    },
+
+
+    getImagexTemplate() {
+      return new Promise((resolve, reject) => {
+        axios.post('https://imagexdemo.volcengine.com/api/PreviewLiteImageTemplate/', {
+          "OuputQuality": 100,
+          "ImageUri": "imagex-rc/6.png",
+          "Filters": [{"Name": "smartv2", "Param": {"width": 285, "height": 220, "policy": 1, "scene": "cartoon"}}],
+          "Sync": true,
+          "OutputExtra": {"heic.sync": "true", "heic.timeout": "30", "png.use_quant": "true"}
+        }).then(res => {
+          let url = res.data.Result.PreviewURL;
+          resolve(url.substr(url.indexOf('~')))
+        }).catch(err => {
+          reject(err)
+        })
+      })
     },
 
     getCPName() {
