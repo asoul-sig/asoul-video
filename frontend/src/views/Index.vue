@@ -198,6 +198,11 @@ export default {
           value: 'MS4wLjABAAAAxCiIYlaaKaMz_J1QaIAmHGgc3bTerIpgTzZjm0na8w5t2KTPrCz4bm_5M5EMPy92',
           key: 1 << 4
         },
+        {
+          text: 'A-SOUL Official',
+          value: 'MS4wLjABAAAAflgvVQ5O1K4RfgUu3k0A2erAZSK7RsdiqPAvxcObn93x2vk4SKk1eUb6l_D4MX-n',
+          key: 1 << 5
+        },
       ]
     }
   },
@@ -347,11 +352,12 @@ export default {
         index += item.key
       })
 
-      // 向晚 00001
-      // 贝拉 00010
-      // 珈乐 00100
-      // 嘉然 01000
-      // 乃琳 10000
+      // 向晚 000001
+      // 贝拉 000010
+      // 珈乐 000100
+      // 嘉然 001000
+      // 乃琳 010000
+      // 阿草 100000
       const cp = [
         '', // 0
         '', // 1 向晚
@@ -386,7 +392,7 @@ export default {
         '', // 30 贝拉 珈乐 嘉然 乃琳
         'A-SOUL 全员', // 31 向晚 贝拉 珈乐 嘉然 乃琳
       ]
-      return cp[index]
+      return cp[index] ?? ''
     }
   },
 
