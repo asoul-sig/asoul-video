@@ -3,7 +3,7 @@
     <v-dialog
         v-model="playerDialog"
         @click:outside="closeDialog"
-        max-width="400"
+        :max-width="playerWidth"
     >
       <v-card>
         <video-player class="video-player-box"
@@ -155,6 +155,7 @@ export default {
       isEnd: false,
       currentPage: 1,
       playerDialog: false,
+      playerWidth: 400,
       playerOptions: {
         loop: true,
         fluid: true,
@@ -268,6 +269,12 @@ export default {
     },
 
     playVideo(v) {
+      if (v.video_height > v.video_width) {
+        this.playerWidth = 400
+      } else {
+        this.playerWidth = 1000
+      }
+
       this.playerDialog = true
       this.playerOptions.sources[0].src = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${v.vid}&ratio=720p&line=0`
       this.playerOptions.sources[0].poster = v.dynamic_cover_urls[0]
