@@ -2,6 +2,8 @@
 
 The source code of https://asoul.video/
 
+![](https://screenshotapi-dot-net.storage.googleapis.com/asoul_video__077bf1d6aeee.png)
+
 ## Set up development environment
 
 ### Frontend
