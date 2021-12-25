@@ -4,17 +4,34 @@
         app
         color="primary"
     >
-      <div class="d-flex align-center white--text">
-        A-SOUL Video
-      </div>
+      <v-spacer></v-spacer>
       <v-spacer></v-spacer>
       <v-btn
           href="https://github.red/asoul-video-trick/"
           target="_blank"
           text
-          class="white--text"
+          class="white--text ml-2 mr-2"
       >
         关于
+      </v-btn>
+      <v-btn
+          href="https://github.com/asoul-video"
+          target="_blank"
+          text
+          class="white--text ml-2 mr-2"
+      >
+        <span>开源</span>
+      </v-btn>
+      <div class="white--text ml-2 mr-2">
+        <b>A-SOUL Video</b>
+      </div>
+      <v-btn
+          href="https://github.com/asoul-video/acao"
+          target="_blank"
+          text
+          class="white--text ml-2 mr-2"
+      >
+        阿草
       </v-btn>
       <v-menu offset-y open-on-hover>
         <template v-slot:activator="{ on, attrs }">
@@ -23,6 +40,7 @@
               text
               v-bind="attrs"
               v-on="on"
+              class="white--text ml-2 mr-2"
           >
             友链
           </v-btn>
@@ -37,15 +55,8 @@
           </v-list-item-group>
         </v-list>
       </v-menu>
-      <v-btn
-          href="https://github.com/asoul-video"
-          target="_blank"
-          text
-          class="white--text"
-      >
-        <span class="mr-2">GitHub</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
     </v-app-bar>
     <v-main>
       <router-view/>
