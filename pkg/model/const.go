@@ -12,6 +12,7 @@ const (
 	MemberSecUIDCarol  = MemberSecUID("MS4wLjABAAAAuZHC7vwqRhPzdeTb24HS7So91u9ucl9c8JjpOS2CPK-9Kg2D32Sj7-mZYvUCJCya")
 	MemberSecUIDDiana  = MemberSecUID("MS4wLjABAAAA5ZrIrbgva_HMeHuNn64goOD2XYnk4ItSypgRHlbSh1c")
 	MemberSecUIDEileen = MemberSecUID("MS4wLjABAAAAxCiIYlaaKaMz_J1QaIAmHGgc3bTerIpgTzZjm0na8w5t2KTPrCz4bm_5M5EMPy92")
+	MemberSecUIDAcao   = MemberSecUID("MS4wLjABAAAAflgvVQ5O1K4RfgUu3k0A2erAZSK7RsdiqPAvxcObn93x2vk4SKk1eUb6l_D4MX-n")
 )
 
 type ReportType string
