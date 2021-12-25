@@ -8,6 +8,14 @@
         A-SOUL Video
       </div>
       <v-spacer></v-spacer>
+      <v-btn
+          href="https://github.red/asoul-video-trick/"
+          target="_blank"
+          text
+          class="white--text"
+      >
+        关于
+      </v-btn>
       <v-menu offset-y open-on-hover>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
