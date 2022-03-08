@@ -4,6 +4,7 @@
         v-model="playerDialog"
         @click:outside="closeDialog"
         :max-width="playerWidth"
+        :eager="true"
     >
       <v-card>
         <video-player class="video-player-box"
@@ -144,7 +145,15 @@
 import qs from 'qs'
 import axios from 'axios'
 import 'video.js/dist/video-js.css'
-import {videoPlayer} from 'vue-video-player'
+import {videoPlayer, videojs} from 'vue-video-player'
+
+window.videojs = videojs
+require("video.js/dist/lang/zh-CN")
+window.videojs.addLanguage('zh-CN', {
+      "The media could not be loaded, either because the server or network failed or because the format is not supported.":
+          '小伙伴你好，该视频被羊驼删除了 ✋🏻 小伙伴看看别的视频吧~'
+    }
+);
 
 export default {
   name: "Index",
@@ -165,7 +174,8 @@ export default {
         sources: [{
           type: "video/mp4",
           src: ''
-        }]
+        }],
+        lang: 'zh-CN',
       },
       videos: [],
       coverTemplate: '',
