@@ -15,7 +15,7 @@
         关于
       </v-btn>
       <v-btn
-          href="https://github.com/asoul-video"
+          href="https://github.com/asoul-sig"
           target="_blank"
           text
           class="white--text ml-2 mr-2"
