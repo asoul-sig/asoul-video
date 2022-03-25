@@ -8,10 +8,10 @@ import (
 	"github.com/flamego/flamego"
 	log "unknwon.dev/clog/v2"
 
-	"github.com/asoul-video/asoul-video/frontend"
-	"github.com/asoul-video/asoul-video/internal/context"
-	"github.com/asoul-video/asoul-video/internal/db"
-	"github.com/asoul-video/asoul-video/internal/route"
+	"github.com/asoul-sig/asoul-video/frontend"
+	"github.com/asoul-sig/asoul-video/internal/context"
+	"github.com/asoul-sig/asoul-video/internal/db"
+	"github.com/asoul-sig/asoul-video/internal/route"
 )
 
 var (

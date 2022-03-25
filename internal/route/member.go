@@ -9,9 +9,9 @@ import (
 
 	log "unknwon.dev/clog/v2"
 
-	"github.com/asoul-video/asoul-video/internal/context"
-	"github.com/asoul-video/asoul-video/internal/db"
-	"github.com/asoul-video/asoul-video/pkg/model"
+	"github.com/asoul-sig/asoul-video/internal/context"
+	"github.com/asoul-sig/asoul-video/internal/db"
+	"github.com/asoul-sig/asoul-video/pkg/model"
 )
 
 type Member struct{}

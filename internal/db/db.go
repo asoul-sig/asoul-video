@@ -11,8 +11,8 @@ import (
 	"github.com/pkg/errors"
 	"upper.io/db.v3/postgresql"
 
-	"github.com/asoul-video/asoul-video/internal/dbutil"
-	"github.com/asoul-video/asoul-video/migrations"
+	"github.com/asoul-sig/asoul-video/internal/dbutil"
+	"github.com/asoul-sig/asoul-video/migrations"
 )
 
 // Init connects to the database and migrate tables.
