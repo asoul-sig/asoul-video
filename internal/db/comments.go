@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"upper.io/db.v3/lib/sqlbuilder"
 
-	"github.com/asoul-video/asoul-video/internal/dbutil"
+	"github.com/asoul-sig/asoul-video/internal/dbutil"
 )
 
 var _ CommentsStore = (*comments)(nil)

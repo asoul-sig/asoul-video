@@ -11,7 +11,7 @@ import (
 	dbv3 "upper.io/db.v3"
 	"upper.io/db.v3/lib/sqlbuilder"
 
-	"github.com/asoul-video/asoul-video/pkg/model"
+	"github.com/asoul-sig/asoul-video/pkg/model"
 )
 
 var _ MembersStore = (*members)(nil)
