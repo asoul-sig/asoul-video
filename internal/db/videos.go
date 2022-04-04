@@ -35,6 +35,8 @@ type VideosStore interface {
 	ListIDs(ctx context.Context) ([]string, error)
 	// Random returns a video randomly.
 	Random(ctx context.Context) (*Video, error)
+	// Refresh refreshes the materialized view.
+	Refresh(ctx context.Context) error
 }
 
 func NewVideosStore(db sqlbuilder.Database) VideosStore {
@@ -250,4 +252,9 @@ func (db *videos) Random(ctx context.Context) (*Video, error) {
 		return nil, errors.Wrap(err, "get video")
 	}
 	return &video, nil
+}
+
+func (db *videos) Refresh(ctx context.Context) error {
+	_, err := db.WithContext(ctx).Exec("REFRESH MATERIALIZED VIEW video_list;")
+	return err
 }

@@ -1,11 +1,13 @@
 package main
 
 import (
+	gocontext "context"
 	"io/fs"
 	"net/http"
 	"os"
 
 	"github.com/flamego/flamego"
+	"github.com/robfig/cron/v3"
 	log "unknwon.dev/clog/v2"
 
 	"github.com/asoul-sig/asoul-video/frontend"
@@ -29,6 +31,22 @@ func main() {
 	if err := db.Init(); err != nil {
 		log.Fatal("Failed to connect to database: %v", err)
 	}
+
+	// Register cron task.
+	ctx := gocontext.Background()
+	if err := db.Videos.Refresh(ctx); err != nil {
+		log.Error("Failed to refresh materialized views: %v", err)
+	}
+	c := cron.New()
+	if _, err := c.AddFunc("@every 1h", func() {
+		if err := db.Videos.Refresh(ctx); err != nil {
+			log.Error("Failed to refresh materialized views: %v", err)
+		}
+		log.Trace("Refresh materialized views.")
+	}); err != nil {
+		log.Fatal("Failed to add cron function: %v", err)
+	}
+	c.Start()
 
 	f := flamego.Classic()
 	f.Use(func(ctx flamego.Context) {
