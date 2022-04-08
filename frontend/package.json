@@ -11,12 +11,14 @@
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
     "qs": "^6.10.1",
+    "typeface-roboto": "^1.1.13",
     "vue": "^2.6.11",
     "vue-router": "^3.5.2",
     "vue-video-player": "^5.0.2",
     "vuetify": "^2.4.0"
   },
   "devDependencies": {
+    "@mdi/font": "^6.6.96",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
