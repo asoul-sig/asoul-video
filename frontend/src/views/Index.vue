@@ -329,7 +329,7 @@ export default {
     },
 
     setCover(index, v) {
-      let coverURL = v.dynamic_cover_urls[0].replace(/obj/g, '').replace(/~(.*)/g, '');
+      let coverURL = v.dynamic_cover_urls[0];
       if (v.face_points.length > 0) {
         let width = 285;
         let scale = width / v.cover_width;
@@ -342,7 +342,7 @@ export default {
         return url
       }
 
-      return coverURL + this.coverTemplate
+      return coverURL
     },
 
 
