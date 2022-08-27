@@ -42,7 +42,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: registry.cn-hangzhou.aliyuncs.com
           repository: registry.cn-hangzhou.aliyuncs.com/eggplant/asoul-video
-          tag_format: "%YYYY%_%MM%_%DD%_%H%%m%%s%,latest"
+          tag_format: "%YYYY%_%MM%_%DD%_%H%%m%%s%"
           auto_tag: true
 
       - name: Send notification to Discrod
