@@ -35,30 +35,18 @@ jobs:
         run: |
           CGO_ENABLED=0 go build -v -ldflags " -X \"main.BuildTime=${{ steps.date.outputs.date }}\" -X \"main.BuildCommit=$GITHUB_SHA\"" -trimpath
 
-      - name: Upload binary to server
-        uses: appleboy/scp-action@master
+      - name: Build & Publish to Registry
+        uses: wuhan005/publish-docker-action@master
         with:
-          host: ${{ secrets.PRODUCTION_HOST }}
-          username: ${{ secrets.PRODUCTION_USER }}
-          password: ${{ secrets.PRODUCTION_PASSWORD }}
-          port: ${{ secrets.PRODUCTION_PORT }}
-          source: "asoul-video"
-          target: "/etc/asoul-video"
-
-      - name: Restart service
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.PRODUCTION_HOST }}
-          username: ${{ secrets.PRODUCTION_USER }}
-          password: ${{ secrets.PRODUCTION_PASSWORD }}
-          port: ${{ secrets.PRODUCTION_PORT }}
-          script: |
-            sudo chmod +x /etc/asoul-video/asoul-video
-            sudo service asoulvideo restart
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: registry.cn-hangzhou.aliyuncs.com
+          repository: registry.cn-hangzhou.aliyuncs.com/eggplant/asoul-video
+          tag_format: "%YYYY%_%MM%_%DD%_%H%%m%%s%,latest"
+          auto_tag: true
 
       - name: Send notification to Discrod
         env:
-
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
