@@ -15,7 +15,7 @@
     "vue": "^2.6.11",
     "vue-router": "^3.5.2",
     "vue-video-player": "^5.0.2",
-    "vuetify": "^2.4.0"
+    "vuetify": "^2.6.10"
   },
   "devDependencies": {
     "@mdi/font": "^6.6.96",
