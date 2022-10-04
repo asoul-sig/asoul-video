@@ -80,7 +80,7 @@ A-SOUL Video 后端需要安装以下依赖：
 git clone --depth 1 https://github.com/asoul-video/asoul-video
 ```
 
-**注意** 本仓库开启 Go Module，请将仓库目录防止在你的 `$GOPATH` 目录之外。
+**注意** 本仓库开启 Go Module，请将仓库目录放置在你的 `$GOPATH` 目录之外。
 
 #### 步骤 4: 配置数据库连接
 
