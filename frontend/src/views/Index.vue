@@ -1,65 +1,30 @@
 <template>
   <div>
-    <v-dialog
-        v-model="playerDialog"
-        @click:outside="closeDialog"
-        :max-width="playerWidth"
-        :eager="true"
-    >
+    <v-dialog v-model="playerDialog" @click:outside="closeDialog" :max-width="playerWidth" :eager="true">
       <v-card>
-        <video-player class="video-player-box"
-                      ref="videoPlayer"
-                      :options="playerOptions"
-                      :playsinline="true"
-        >
+        <video-player class="video-player-box" ref="videoPlayer" :options="playerOptions" :playsinline="true">
         </video-player>
       </v-card>
     </v-dialog>
 
     <v-container>
       <h2 class="text-center pa-8">A-SOUL 抖音视频 All in one!</h2>
-      <v-row
-          justify="center"
-          no-gutters
-      >
-        <v-text-field
-            ref="searchInput"
-            v-model="searchString"
-            class="mx-2 mx-md-4 rounded-lg justify-center"
-            placeholder="搜索..."
-            autocomplete="off"
-            dense
-            hide-details
-            solo
-            style="max-width: 450px;"
-            @input="searchChange"
-        >
+      <v-row justify="center" no-gutters>
+        <v-text-field ref="searchInput" v-model="searchString" class="mx-2 mx-md-4 rounded-lg justify-center"
+          placeholder="搜索..." autocomplete="off" dense hide-details solo style="max-width: 450px;"
+          @input="searchChange">
         </v-text-field>
       </v-row>
-      <v-row
-          justify="center"
-          no-gutters
-      >
-        <v-combobox
-            v-model="searchMembers"
-            :items="memberItems"
-            multiple
-            style="max-width: 450px;"
-            @change="searchChange"
-        >
-          <template v-slot:selection="{index, item}">
+      <v-row justify="center" no-gutters>
+        <v-combobox v-model="searchMembers" :items="memberItems" multiple style="max-width: 450px;"
+          @change="searchChange">
+          <template v-slot:selection="{ index, item }">
             <div v-if="getCPName() !== ''">
-              <v-chip
-                  v-if="index === 1"
-                  label
-              >
+              <v-chip v-if="index === 1" label>
                 {{ getCPName() }}
               </v-chip>
             </div>
-            <v-chip
-                v-else
-                label
-            >
+            <v-chip v-else label>
               {{ item.text }}
             </v-chip>
           </template>
@@ -77,23 +42,11 @@
 
     <v-container>
       <v-row dense>
-        <v-col
-            v-for="(v, index) in videos"
-            :key="v.id"
-            :xl="3"
-            :lg="3"
-            :md="3"
-            :sm="12"
-        >
+        <v-col v-for="(v, index) in videos" :key="v.id" :xl="3" :lg="3" :md="3" :sm="12">
           <v-card>
-            <v-img
-                :ref="`cover-${index}`"
-                :src="setCover(index, v)"
-                class="white--text align-end"
-                :position="v.face_points.length > 0 ? 'bottom center' : 'center center'"
-                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                height="220px"
-            >
+            <v-img :ref="`cover-${index}`" :src="setCover(index, v)" class="white--text align-end"
+              :position="v.face_points.length > 0 ? 'bottom center' : 'center center'"
+              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" height="220px">
               <span v-show="false">{{ v.face_points }}</span>
               <v-card-title v-text="v.description"></v-card-title>
               <v-row class="pl-7 pb-5 pt-1">
@@ -110,7 +63,7 @@
 
             <v-card-actions>
               <v-avatar size="36px">
-                <img :src="v.author.avatar_url" :alt="v.author.name"/>
+                <img :src="v.author.avatar_url" :alt="v.author.name" />
               </v-avatar>
               <v-spacer></v-spacer>
               <span class="grey--text text--darken-1">{{ new Date(v.created_at).toLocaleDateString() }}</span>
@@ -124,17 +77,8 @@
             </v-card-actions>
           </v-card>
         </v-col>
-        <v-col
-            :xl="3"
-            :lg="3"
-            :md="3"
-            :sm="12"
-        >
-          <v-skeleton-loader
-              v-if="isLoading"
-              class="mx-auto"
-              type="card"
-          ></v-skeleton-loader>
+        <v-col :xl="3" :lg="3" :md="3" :sm="12">
+          <v-skeleton-loader v-if="isLoading" class="mx-auto" type="card"></v-skeleton-loader>
         </v-col>
       </v-row>
     </v-container>
@@ -145,14 +89,14 @@
 import qs from 'qs'
 import axios from 'axios'
 import 'video.js/dist/video-js.css'
-import {videoPlayer, videojs} from 'vue-video-player'
+import { videoPlayer, videojs } from 'vue-video-player'
 
 window.videojs = videojs
 require("video.js/dist/lang/zh-CN")
 window.videojs.addLanguage('zh-CN', {
-      "The media could not be loaded, either because the server or network failed or because the format is not supported.":
-          '小伙伴你好，该视频被羊驼删除了 ✋🏻 小伙伴看看别的视频吧~'
-    }
+  "The media could not be loaded, either because the server or network failed or because the format is not supported.":
+    '小伙伴你好，该视频被羊驼删除了 ✋🏻 小伙伴看看别的视频吧~'
+}
 );
 
 export default {
@@ -241,14 +185,14 @@ export default {
           secUID.push(item.value)
         })
 
-        axios.get('https://asoul.cdn.n3ko.co/api/videos', {
+        axios.get('/api/videos', {
           params: {
             page: this.currentPage,
             keyword: this.searchString,
             secUID: secUID,
           },
           paramsSerializer: params => {
-            return qs.stringify(params, {arrayFormat: 'repeat'})
+            return qs.stringify(params, { arrayFormat: 'repeat' })
           }
         }).then(res => {
           if (res.data.data.length === 0) {
@@ -267,7 +211,7 @@ export default {
 
     getMembers() {
       return new Promise((resolve, reject) => {
-        axios.get('https://asoul.cdn.n3ko.co/api/members').then(res => {
+        axios.get('/api/members').then(res => {
           res.data.data.forEach((value) => {
             this.members[value.sec_uid] = value
           })
@@ -351,9 +295,9 @@ export default {
         axios.post('https://imagexdemo.volcengine.com/api/PreviewLiteImageTemplate/', {
           "OuputQuality": 100,
           "ImageUri": "imagex-rc/6.png",
-          "Filters": [{"Name": "smartv2", "Param": {"width": 285, "height": 220, "policy": 1, "scene": "cartoon"}}],
+          "Filters": [{ "Name": "smartv2", "Param": { "width": 285, "height": 220, "policy": 1, "scene": "cartoon" } }],
           "Sync": true,
-          "OutputExtra": {"heic.sync": "true", "heic.timeout": "30", "png.use_quant": "true"}
+          "OutputExtra": { "heic.sync": "true", "heic.timeout": "30", "png.use_quant": "true" }
         }).then(res => {
           let url = res.data.Result.PreviewURL;
           resolve(url.substr(url.indexOf('~')))
