@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
-    "qs": "^6.10.1",
+    "qs": "^6.10.3",
     "typeface-roboto": "^1.1.13",
     "vue": "^2.6.11",
     "vue-router": "^3.5.2",
